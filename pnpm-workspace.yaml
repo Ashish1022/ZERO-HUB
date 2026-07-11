@@ -1,0 +1,13 @@
+allowBuilds:
+  esbuild: set this to true or false
+  sharp: set this to true or false
+  unrs-resolver: set this to true or false
+minimumReleaseAgeExclude:
+  - '@payloadcms/db-postgres@3.86.0'
+  - '@payloadcms/drizzle@3.86.0'
+  - '@payloadcms/graphql@3.86.0'
+  - '@payloadcms/next@3.86.0'
+  - '@payloadcms/richtext-lexical@3.86.0'
+  - '@payloadcms/translations@3.86.0'
+  - '@payloadcms/ui@3.86.0'
+  - payload@3.86.0
