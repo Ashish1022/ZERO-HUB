@@ -1,4 +1,4 @@
-import { pgTable, index, foreignKey, integer, uuid, varchar, timestamp, uniqueIndex, numeric, boolean, jsonb, serial, pgEnum } from "drizzle-orm/pg-core"
+import { pgTable, pgView, index, foreignKey, integer, bigint, uuid, varchar, timestamp, uniqueIndex, numeric, boolean, jsonb, serial, pgEnum } from "drizzle-orm/pg-core"
 import { sql } from "drizzle-orm"
 
 export const enumCategoriesStatus = pgEnum("enum_categories_status", ['active', 'inactive', 'draft'])
@@ -809,3 +809,34 @@ export const payloadPreferencesRels = pgTable("payload_preferences_rels", {
 			name: "payload_preferences_rels_users_fk"
 		}).onDelete("cascade"),
 ]);
+
+export const vTenantMonthlySales = pgView("v_tenant_monthly_sales", {
+	tenantId: uuid("tenant_id"),
+	month: varchar(),
+	totalGrossSales: numeric("total_gross_sales"),
+	totalNetSales: numeric("total_net_sales"),
+	totalOrders: numeric("total_orders"),
+	averageOrderValue: numeric("average_order_value"),
+}).existing();
+
+export const vTopCategoriesByTenant = pgView("v_top_categories_by_tenant", {
+	tenantId: uuid("tenant_id"),
+	categoryName: varchar("category_name"),
+	totalGrossSales: numeric("total_gross_sales"),
+	totalNetSales: numeric("total_net_sales"),
+	totalOrders: numeric("total_orders"),
+	totalItemsSold: numeric("total_items_sold"),
+	categoryRank: bigint("category_rank", { mode: "number" }),
+}).existing();
+
+export const vProductPerformanceByTenant = pgView("v_product_performance_by_tenant", {
+	tenantId: uuid("tenant_id"),
+	productName: varchar("product_name"),
+	totalGrossSales: numeric("total_gross_sales"),
+	totalNetSales: numeric("total_net_sales"),
+	totalCostPrice: numeric("total_cost_price"),
+	totalItemsSold: numeric("total_items_sold"),
+	totalOrders: numeric("total_orders"),
+	productRankHigh: bigint("product_rank_high", { mode: "number" }),
+	productRankLow: bigint("product_rank_low", { mode: "number" }),
+}).existing();

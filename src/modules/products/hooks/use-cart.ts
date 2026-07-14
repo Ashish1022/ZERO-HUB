@@ -15,11 +15,11 @@ export const useCart = (tenantSlug: string) => {
         state.tenantCarts[tenantSlug]?.items || []
     ));
 
-    const isProductInCart = useCallback((productId: number) => {
+    const isProductInCart = useCallback((productId: string) => {
         return cartItems.some(item => item.productId === productId);
     }, [cartItems]);
 
-    const getProductQuantity = useCallback((productId: number) => {
+    const getProductQuantity = useCallback((productId: string) => {
         const item = cartItems.find(item => item.productId === productId);
         return item?.quantity || 0;
     }, [cartItems]);
@@ -28,23 +28,23 @@ export const useCart = (tenantSlug: string) => {
         clearCart(tenantSlug);
     }, [tenantSlug, clearCart]);
 
-    const handleAddProduct = useCallback((productId: number, quantity = 1) => {
+    const handleAddProduct = useCallback((productId: string, quantity = 1) => {
         addProduct(tenantSlug, productId, quantity);
     }, [addProduct, tenantSlug]);
 
-    const handleRemoveProduct = useCallback((productId: number) => {
+    const handleRemoveProduct = useCallback((productId: string) => {
         removeProduct(tenantSlug, productId);
     }, [removeProduct, tenantSlug]);
 
-    const handleUpdateQuantity = useCallback((productId: number, quantity: number) => {
+    const handleUpdateQuantity = useCallback((productId: string, quantity: number) => {
         updateQuantity(tenantSlug, productId, quantity);
     }, [updateQuantity, tenantSlug]);
 
-    const handleIncrementQuantity = useCallback((productId: number) => {
+    const handleIncrementQuantity = useCallback((productId: string) => {
         incrementQuantity(tenantSlug, productId);
     }, [incrementQuantity, tenantSlug]);
 
-    const handleDecrementQuantity = useCallback((productId: number) => {
+    const handleDecrementQuantity = useCallback((productId: string) => {
         decrementQuantity(tenantSlug, productId);
     }, [decrementQuantity, tenantSlug]);
 

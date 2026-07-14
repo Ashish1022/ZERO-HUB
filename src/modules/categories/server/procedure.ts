@@ -336,8 +336,8 @@ export const categoriesRouter = createTRPCRouter({
             z.object({
                 slug: z.string(),
                 cursor: z.object({
-                    id: z.number(),
-                    updatedAt: z.date()
+                    id: z.string(),
+                    updatedAt: z.string()
                 }).optional(),
                 limit: z.number().default(3),
             })

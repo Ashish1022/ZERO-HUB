@@ -14,8 +14,8 @@ import { SearchFilters } from "../search"
 import { ProductFilters } from "./product-filters"
 
 type ProductImage = {
-    imageId: number;
-    parentId: number;
+    imageId: string;
+    parentId: string;
     isPrimary: boolean | null;
     order: number;
     url: string | null;

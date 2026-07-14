@@ -13,7 +13,7 @@ import { useCart } from "@/modules/products/hooks/use-cart"
 import { useWishlist } from "@/modules/products/hooks/use-wishlist"
 
 interface Props {
-    id: number
+    id: string
     name: string
     slug: string
     price?: number | null

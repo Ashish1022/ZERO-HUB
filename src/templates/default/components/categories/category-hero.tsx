@@ -16,8 +16,8 @@ import { SearchFilters } from "../search";
 import { useProductFilters } from "@/modules/products/hooks/use-product-filter";
 
 type ProductImage = {
-    imageId: number;
-    parentId: number;
+    imageId: string;
+    parentId: string;
     isPrimary: boolean | null;
     order: number;
     url: string | null;

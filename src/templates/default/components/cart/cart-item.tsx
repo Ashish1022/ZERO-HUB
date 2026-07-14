@@ -7,13 +7,13 @@ import { Input } from "@/components/ui/input"
 import { formatPrice } from "@/lib/utils"
 
 interface Props {
-    id: number
+    id: string
     image?: string | null
     name: string
     price: number
-    incrementQuantity: (productId: number) => void
-    removeProduct: (productId: number) => void
-    decrementQuantity: (productId: number) => void
+    incrementQuantity: (productId: string) => void
+    removeProduct: (productId: string) => void
+    decrementQuantity: (productId: string) => void
     productQuantity: number
 }
 

@@ -34,7 +34,7 @@ const chartConfig = {
     },
 } satisfies ChartConfig
 
-export function GrossNetSales({ tenantId }: { tenantId: number }) {
+export function GrossNetSales({ tenantId }: { tenantId: string }) {
 
     const trpc = useTRPC();
     const { data } = useSuspenseQuery(trpc.analytics.getTenantMonthlySales.queryOptions({ tenantId: tenantId }));

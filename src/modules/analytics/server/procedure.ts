@@ -23,7 +23,7 @@ export const analyticsRouter = createTRPCRouter({
     getTenantMonthlySales: baseProcedure
         .input(
             z.object({
-                tenantId: z.number(),
+                tenantId: z.string(),
             })
         )
         .query(async ({ input }) => {
@@ -34,7 +34,7 @@ export const analyticsRouter = createTRPCRouter({
                 .select()
                 .from(vTenantMonthlySales)
                 .where(
-                    eq(vTenantMonthlySales.tenantId, Number(tenantId)),
+                    eq(vTenantMonthlySales.tenantId, tenantId),
                 )
                 .orderBy(asc(vTenantMonthlySales.month));
 
@@ -62,7 +62,7 @@ export const analyticsRouter = createTRPCRouter({
     getTenantTopCategories: baseProcedure
         .input(
             z.object({
-                tenantId: z.number(),
+                tenantId: z.string(),
             })
         )
         .query(async ({ input }) => {
@@ -73,7 +73,7 @@ export const analyticsRouter = createTRPCRouter({
                 .from(vTopCategoriesByTenant)
                 .where(
                     and(
-                        eq(vTopCategoriesByTenant.tenantId, Number(tenantId)),
+                        eq(vTopCategoriesByTenant.tenantId, tenantId),
                         lte(sql`${vTopCategoriesByTenant.categoryRank}`, 5)
                     )
                 )
@@ -85,7 +85,7 @@ export const analyticsRouter = createTRPCRouter({
     getTenantTopProducts: baseProcedure
         .input(
             z.object({
-                tenantId: z.number()
+                tenantId: z.string()
             })
         )
         .query(async ({ input }) => {
@@ -104,7 +104,7 @@ export const analyticsRouter = createTRPCRouter({
                 })
                 .from(vProductPerformanceByTenant)
                 .where(and(
-                    eq(vProductPerformanceByTenant.tenantId, Number(tenantId)),
+                    eq(vProductPerformanceByTenant.tenantId, tenantId),
                     lte(sql`${vProductPerformanceByTenant.productRankHigh}`, 10)
                 ))
                 .orderBy(asc(vProductPerformanceByTenant.productRankHigh));
@@ -114,7 +114,7 @@ export const analyticsRouter = createTRPCRouter({
     getTenantLowProducts: baseProcedure
         .input(
             z.object({
-                tenantId: z.number()
+                tenantId: z.string()
             })
         )
         .query(async ({ input }) => {
@@ -133,7 +133,7 @@ export const analyticsRouter = createTRPCRouter({
                 })
                 .from(vProductPerformanceByTenant)
                 .where(and(
-                    eq(vProductPerformanceByTenant.tenantId, Number(tenantId)),
+                    eq(vProductPerformanceByTenant.tenantId, tenantId),
                     lte(sql`${vProductPerformanceByTenant.productRankLow}`, 10)
                 ))
                 .orderBy(asc(vProductPerformanceByTenant.productRankLow));

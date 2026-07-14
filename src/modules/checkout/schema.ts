@@ -80,7 +80,7 @@ export const instructionSchema = z.object({
 export const order = z.object({
     finalAmount: z.number(),
     products: z.array(z.object({
-        productId: z.number(),
+        productId: z.string(),
         name: z.string(),
         quantity: z.number(),
         price: z.number(),

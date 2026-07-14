@@ -2,13 +2,13 @@ import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
 interface WishlistItem {
-    productIds: number[];
+    productIds: string[];
 }
 
 interface WishlistState {
     tenantWishlists: Record<string, WishlistItem>;
-    addProduct: (tenantSlug: string, productId: number) => void;
-    removeProduct: (tenantSlug: string, productId: number) => void;
+    addProduct: (tenantSlug: string, productId: string) => void;
+    removeProduct: (tenantSlug: string, productId: string) => void;
     clearWishlist: (tenantSlug: string) => void;
     clearAllWishlists: () => void;
 }

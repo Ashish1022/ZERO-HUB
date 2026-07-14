@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
 interface CartItem {
-    productId: number;
+    productId: string;
     quantity: number;
 }
 
@@ -12,11 +12,11 @@ interface TenantCart {
 
 interface CartState {
     tenantCarts: Record<string, TenantCart>;
-    addProduct: (tenantSlug: string, productId: number, quantity?: number) => void;
-    removeProduct: (tenantSlug: string, productId: number) => void;
-    updateQuantity: (tenantSlug: string, productId: number, quantity: number) => void;
-    incrementQuantity: (tenantSlug: string, productId: number) => void;
-    decrementQuantity: (tenantSlug: string, productId: number) => void;
+    addProduct: (tenantSlug: string, productId: string, quantity?: number) => void;
+    removeProduct: (tenantSlug: string, productId: string) => void;
+    updateQuantity: (tenantSlug: string, productId: string, quantity: number) => void;
+    incrementQuantity: (tenantSlug: string, productId: string) => void;
+    decrementQuantity: (tenantSlug: string, productId: string) => void;
     clearCart: (tenantSlug: string) => void;
     clearAllCarts: () => void;
 }

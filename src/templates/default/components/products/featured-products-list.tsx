@@ -6,8 +6,8 @@ import { useTRPC } from "@/trpc/client"
 import { useSuspenseQuery } from "@tanstack/react-query"
 
 type ProductImage = {
-    imageId: number;
-    parentId: number;
+    imageId: string;
+    parentId: string;
     isPrimary: boolean | null;
     order: number;
     url: string | null;

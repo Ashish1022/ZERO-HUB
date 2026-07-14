@@ -12,7 +12,7 @@ export const useWishlist = (tenantSlug: string) => {
 
     const wishlistItems = useWishlistStore(useShallow((state) => state.tenantWishlists[tenantSlug]?.productIds || []))
 
-    const isProductInWishlist = useCallback((productId: number) => {
+    const isProductInWishlist = useCallback((productId: string) => {
         return wishlistItems.some(item => item === productId);
     }, [wishlistItems]);
 
@@ -20,11 +20,11 @@ export const useWishlist = (tenantSlug: string) => {
         clearWishlist(tenantSlug);
     }, [tenantSlug, clearWishlist]);
 
-    const handleAddProduct = useCallback((productId: number) => {
+    const handleAddProduct = useCallback((productId: string) => {
         addProduct(tenantSlug, productId)
     }, [addProduct, tenantSlug])
 
-    const handleRemoveProduct = useCallback((productId: number) => {
+    const handleRemoveProduct = useCallback((productId: string) => {
         removeProduct(tenantSlug, productId);
     }, [removeProduct, tenantSlug]);
 

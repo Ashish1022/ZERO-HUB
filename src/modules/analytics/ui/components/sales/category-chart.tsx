@@ -32,7 +32,7 @@ const chartConfig = {
     },
 } satisfies ChartConfig
 
-export function CategoryChart({ tenantId }: { tenantId: number }) {
+export function CategoryChart({ tenantId }: { tenantId: string }) {
     const currentYear = new Date().getFullYear()
 
     const trpc = useTRPC();

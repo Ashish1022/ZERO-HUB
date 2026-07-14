@@ -71,7 +71,7 @@ export const schema = z.object({
     productName: z.string().nullable(),
     productRankHigh: z.number().nullable(),
     productRankLow: z.number().nullable(),
-    tenantId: z.number().nullable(),
+    tenantId: z.string().nullable(),
     totalGrossSales: z.string().nullable(),
     totalItemsSold: z.string().nullable(),
     totalNetSales: z.string().nullable(),
@@ -390,7 +390,7 @@ function ProductTable({
 export function ProductsOverview({
     tenantId
 }: {
-    tenantId: number
+    tenantId: string
 }) {
     const [selectedTab, setSelectedTab] = React.useState("top")
     const trpc = useTRPC();

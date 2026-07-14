@@ -33,7 +33,7 @@ const monthNames = [
     "July", "August", "September", "October", "November", "December"
 ]
 
-export function TotalOrdersLineChart({ tenantId }: { tenantId: number }) {
+export function TotalOrdersLineChart({ tenantId }: { tenantId: string }) {
 
     const currentYear = new Date().getFullYear();
 

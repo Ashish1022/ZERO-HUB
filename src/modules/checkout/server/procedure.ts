@@ -15,7 +15,7 @@ export const checkoutRouter = createTRPCRouter({
     getMany: baseProcedure
         .input(
             z.object({
-                productIds: z.array(z.number())
+                productIds: z.array(z.string())
             })
         )
         .query(async ({ ctx, input }) => {
@@ -130,7 +130,7 @@ export const checkoutRouter = createTRPCRouter({
                 const razorpayOrder = await razorpay.orders.create({
                     amount: razorpay_amount,
                     currency: 'INR',
-                    receipt: `order-${String(order.id).substring(0, 30)}`,
+                    receipt: `order-${order.id.substring(0, 30)}`,
                     transfers: [
                         {
                             account: tenant.docs[0].bankDetails.razorpayLinkedAccountId,
@@ -163,7 +163,7 @@ export const checkoutRouter = createTRPCRouter({
             z.object({
                 razorpay_order_id: z.string().optional(),
                 amount: z.union([z.number(), z.string()]).optional(),
-                uniqueId: z.number(),
+                uniqueId: z.string(),
                 razorpay_payment_id: z.string().optional(),
                 razorpay_signature: z.string().optional(),
                 slug: z.string(),
@@ -171,7 +171,7 @@ export const checkoutRouter = createTRPCRouter({
                 discountAmount: z.number(),
                 grossAmount: z.number(),
                 products: z.array(z.object({
-                    productId: z.number(),
+                    productId: z.string(),
                     name: z.string(),
                     quantity: z.number(),
                     price: z.number(),
@@ -215,7 +215,7 @@ export const checkoutRouter = createTRPCRouter({
                     })
                     .from(orders)
                     .leftJoin(ordersOrderItems, (eq(orders.id, ordersOrderItems.parentId)))
-                    .where(eq(orders.id, Number(input.uniqueId)))
+                    .where(eq(orders.id, input.uniqueId))
                     .groupBy(orders.id, orders.createdAt, orders.grossAmount, orders.discountAmount, orders.saleAmount)
                     .limit(1)
 
@@ -224,7 +224,7 @@ export const checkoutRouter = createTRPCRouter({
                 const orderDateTime = new Date(order.createdAt)
                 const month = (orderDateTime.getMonth() + 1).toString().padStart(2, '0');
                 const year = orderDateTime.getFullYear().toString();
-                const saleAmount = Number(order.saleAmount)
+                const saleAmount = parseFloat(order.saleAmount)
                 const grossAmount = parseFloat(order.grossAmount)
 
                 const [existingSummary] = await db
@@ -317,7 +317,7 @@ export const checkoutRouter = createTRPCRouter({
                                 grossSales: data.grossSales.toFixed(2),
                                 netSales: data.netSales.toFixed(2),
                                 totalItemsSold: data.totalItemsSold.toString(),
-                                updatedAt: new Date(),
+                                updatedAt: new Date().toISOString(),
                             },
                         });
                 });
@@ -370,7 +370,7 @@ export const checkoutRouter = createTRPCRouter({
                                 grossSales: data.grossSales.toFixed(2),
                                 netSales: data.netSales.toFixed(2),
                                 totalItemsSold: data.totalItemsSold.toString(),
-                                updatedAt: new Date(),
+                                updatedAt: new Date().toISOString(),
                             },
                         })
                 });
