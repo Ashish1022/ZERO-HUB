@@ -27,20 +27,21 @@ import toast from "react-hot-toast";
 
 interface Props {
     onSuccess: (userData: z.infer<typeof registerSchema>) => void;
+    defaultValues?: Partial<z.infer<typeof registerSchema>>;
 }
 
-export const SignUpForm = ({ onSuccess }: Props) => {
+export const SignUpForm = ({ onSuccess, defaultValues }: Props) => {
 
     const [showPassword, setShowPassword] = useState(false);
 
     const form = useForm<z.infer<typeof registerSchema>>({
         resolver: zodResolver(registerSchema),
         defaultValues: {
-            email: '',
-            phone: '',
-            password: '',
-            username: '',
-            store: ''
+            email: defaultValues?.email ?? '',
+            phone: defaultValues?.phone ?? '',
+            password: defaultValues?.password ?? '',
+            username: defaultValues?.username ?? '',
+            store: defaultValues?.store ?? ''
         }
     });
 
@@ -81,7 +82,6 @@ export const SignUpForm = ({ onSuccess }: Props) => {
                                             {...field}
                                             placeholder="username"
                                             className="pl-10"
-                                            required
                                         />
                                     </div>
                                 </FormControl>
@@ -89,6 +89,7 @@ export const SignUpForm = ({ onSuccess }: Props) => {
                                     Your store will be available at&nbsp;
                                     <strong>{username}</strong>.zerohub.site
                                 </FormDescription>
+                                <FormMessage />
                             </div>
                         </FormItem>
                     )}
@@ -107,7 +108,6 @@ export const SignUpForm = ({ onSuccess }: Props) => {
                                             type="email"
                                             placeholder="name@example.com"
                                             className="pl-10"
-                                            required
                                         />
                                     </div>
                                 </FormControl>
@@ -130,7 +130,6 @@ export const SignUpForm = ({ onSuccess }: Props) => {
                                             type="text"
                                             placeholder="Zero Inc."
                                             className="pl-10"
-                                            required
                                         />
                                     </div>
                                 </FormControl>
@@ -153,7 +152,6 @@ export const SignUpForm = ({ onSuccess }: Props) => {
                                             {...field}
                                             placeholder="Enter phone no."
                                             className="pl-10"
-                                            required
                                         />
                                     </div>
                                 </FormControl>
@@ -181,7 +179,6 @@ export const SignUpForm = ({ onSuccess }: Props) => {
                                             type={showPassword ? "text" : "password"}
                                             placeholder="••••••••"
                                             className="pl-10"
-                                            required
                                         />
                                         <button
                                             type="button"

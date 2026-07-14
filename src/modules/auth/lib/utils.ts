@@ -48,9 +48,9 @@ export const sendEmail = async (to: string, subject: string, templateName: strin
 };
 
 export const checkOtpRestrictions = async (email: string) => {
-    if (await redis.get(`otp_lock:${email}`)) return new Error("Account locked due to multiple failed attempts! Try again after 30 minutes.");
-    if (await redis.get(`otp_spam_lock:${email}`)) return new Error("Too many OTP requests! Please wait an hour before requesting again.");
-    if (await redis.get(`otp_cooldown:${email}`)) return new Error("Please wait a minute before requesting a new OTP.");
+    if (await redis.get(`otp_lock:${email}`)) throw new Error("Account locked due to multiple failed attempts! Try again after 30 minutes.");
+    if (await redis.get(`otp_spam_lock:${email}`)) throw new Error("Too many OTP requests! Please wait an hour before requesting again.");
+    if (await redis.get(`otp_cooldown:${email}`)) throw new Error("Please wait a minute before requesting a new OTP.");
 };
 
 export const trackOtpRequests = async (email: string) => {
@@ -58,7 +58,7 @@ export const trackOtpRequests = async (email: string) => {
     const otpRequests = parseInt((await redis.get(otpRequestKey)) || "0");
     if (otpRequests >= 2) {
         await redis.set(`otp_spam_lock:${email}`, "locked", "EX", 3600);
-        return new Error("Too many OTP requests! Please wait an hour before requesting again.")
+        throw new Error("Too many OTP requests! Please wait an hour before requesting again.")
     };
     await redis.set(otpRequestKey, otpRequests + 1, "EX", 3600);
 };
@@ -84,7 +84,7 @@ export const verifyOtp = async (email: string, otp: string) => {
             throw new Error("Too many failed attempts. Account locked for 30minutes!");
         }
         await redis.set(failedAttmeptsKey, failedAttemtps + 1, "EX", 300);
-        return new Error(`Incorrect OTP. ${2 - failedAttemtps} left.`);
+        throw new Error(`Incorrect OTP. ${2 - failedAttemtps} attempt(s) left.`);
     };
     await redis.del(`otp:${email}`, failedAttmeptsKey);
 };

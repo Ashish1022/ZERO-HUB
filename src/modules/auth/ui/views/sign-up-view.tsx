@@ -49,7 +49,12 @@ export const SignUpView = () => {
         startResendTimer();
     }
 
+    const handleBack = () => {
+        setShowOtp(false);
+    };
+
     const handleOTPSuccess = () => {
+        toast.success("Your account has been verified.");
         router.push("/admin");
     };
 
@@ -85,7 +90,7 @@ export const SignUpView = () => {
                                     </CardDescription>
                                 </CardHeader>
                                 <CardContent>
-                                    <SignUpForm onSuccess={handleSignUpSuccess} />
+                                    <SignUpForm onSuccess={handleSignUpSuccess} defaultValues={userData} />
                                 </CardContent>
                                 <CardFooter className="flex flex-col space-y-4">
                                     <div className="text-center text-sm">
@@ -108,6 +113,7 @@ export const SignUpView = () => {
                                     <OtpForm
                                         userData={userData}
                                         onSuccess={handleOTPSuccess}
+                                        onBack={handleBack}
                                         canResend={canResend}
                                         timer={timer}
                                         onResend={handleResendOTP}

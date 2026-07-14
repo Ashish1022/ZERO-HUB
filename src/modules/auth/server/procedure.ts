@@ -81,7 +81,7 @@ export const authRouter = createTRPCRouter({
                 });
             }
 
-            return { message: "OPT sent to email. Please verify your account." }
+            return { message: "OTP sent to email. Please verify your account." }
         }),
     verify: baseProcedure
         .input(verifySchema)

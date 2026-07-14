@@ -1,9 +1,9 @@
-import { ArrowRight, Loader } from "lucide-react";
+import { ArrowLeft, ArrowRight, Loader } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { otpSchema, registerSchema } from "../../schema";
 
-import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from "@/components/ui/input-otp";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -15,13 +15,14 @@ import toast from "react-hot-toast";
 interface Props {
     userData: z.infer<typeof registerSchema>;
     onSuccess: () => void;
+    onBack: () => void;
     canResend: boolean;
     timer: number;
     onResend: () => void;
     isResending?: boolean;
 }
 
-export const OtpForm = ({ userData, onResend, onSuccess, timer, canResend, isResending }: Props) => {
+export const OtpForm = ({ userData, onResend, onSuccess, onBack, timer, canResend, isResending }: Props) => {
 
     const [otpValue, setOtpValue] = useState("");
 
@@ -85,42 +86,53 @@ export const OtpForm = ({ userData, onResend, onSuccess, timer, canResend, isRes
                                         </InputOTP>
                                     </div>
                                 </FormControl>
+                                <div className="flex justify-center">
+                                    <FormMessage />
+                                </div>
                             </div>
                         </FormItem>
                     )}
                 />
-                <Button type="submit" className="w-full cursor-pointer" disabled={verifyMutation.isPending}>
-                    {verifyMutation.isPending ? (
-                        <div className="flex items-center">
-                            Verifying...
-                            <Loader className="ml-2 h-4 w-4 animate-spin" />
-                        </div>
-                    ) : (
-                        <div className="flex items-center">
-                            Verify
-                            <ArrowRight className="ml-2 h-4 w-4" />
-                        </div>
-                    )}
-                </Button>
-                {canResend ? (
-                    <Button
-                        className="hover:underline outline-none mt-2 cursor-pointer text-xs" variant={"outline"}
-                        type='button'
-                        onClick={onResend}
-                        disabled={isResending}
-                    >
-                        {isResending ? (
+                <div className="space-y-3">
+                    <Button type="submit" className="w-full cursor-pointer" disabled={verifyMutation.isPending || otpValue.length < 6}>
+                        {verifyMutation.isPending ? (
                             <div className="flex items-center">
-                                Resending...
-                                <Loader className="ml-2 h-3 w-3 animate-spin" />
+                                Verifying...
+                                <Loader className="ml-2 h-4 w-4 animate-spin" />
                             </div>
                         ) : (
-                            "Resend OTP ?"
+                            <div className="flex items-center">
+                                Verify
+                                <ArrowRight className="ml-2 h-4 w-4" />
+                            </div>
                         )}
                     </Button>
-                ) : (
-                    `Resend OTP in ${timer}s`
-                )}
+                    <div className="flex items-center justify-center gap-1 text-sm text-muted-foreground">
+                        <span>Didn&apos;t receive the code?</span>
+                        {canResend ? (
+                            <button
+                                type="button"
+                                onClick={onResend}
+                                disabled={isResending}
+                                className="font-medium text-primary hover:underline disabled:opacity-50 cursor-pointer"
+                            >
+                                {isResending ? "Resending..." : "Resend OTP"}
+                            </button>
+                        ) : (
+                            <span className="font-medium text-foreground">Resend in {timer}s</span>
+                        )}
+                    </div>
+                    <Button
+                        type="button"
+                        variant="ghost"
+                        className="w-full cursor-pointer"
+                        onClick={onBack}
+                        disabled={verifyMutation.isPending}
+                    >
+                        <ArrowLeft className="mr-2 h-4 w-4" />
+                        Back to details
+                    </Button>
+                </div>
             </form>
         </Form>
     )
