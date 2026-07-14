@@ -112,7 +112,7 @@ export interface Config {
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
   };
   db: {
-    defaultIDType: number;
+    defaultIDType: string;
   };
   fallbackLocale: null;
   globals: {};
@@ -150,13 +150,13 @@ export interface UserAuthOperations {
  * via the `definition` "users".
  */
 export interface User {
-  id: number;
+  id: string;
   username: string;
   phone: string;
   roles?: ('super-admin' | 'user')[] | null;
   tenants?:
     | {
-        tenant: number | Tenant;
+        tenant: string | Tenant;
         id?: string | null;
       }[]
     | null;
@@ -184,7 +184,7 @@ export interface User {
  * via the `definition` "tenants".
  */
 export interface Tenant {
-  id: number;
+  id: string;
   name: string;
   /**
    * This is the subdomain of the store (e.g. [slug].zerohub.site).
@@ -313,8 +313,8 @@ export interface Tenant {
  * via the `definition` "media".
  */
 export interface Media {
-  id: number;
-  tenant?: (number | null) | Tenant;
+  id: string;
+  tenant?: (string | null) | Tenant;
   alt: string;
   updatedAt: string;
   createdAt: string;
@@ -335,8 +335,8 @@ export interface Media {
  * via the `definition` "products".
  */
 export interface Product {
-  id: number;
-  tenant?: (number | null) | Tenant;
+  id: string;
+  tenant?: (string | null) | Tenant;
   tenantSlug: string;
   /**
    * Product name (max 100 characters)
@@ -396,16 +396,16 @@ export interface Product {
   /**
    * Primary product category
    */
-  category: number | Category;
+  category: string | Category;
   /**
    * Tags for filtering and search
    */
-  tags?: (number | Tag)[] | null;
+  tags?: (string | Tag)[] | null;
   /**
    * Product images (1-10 images required)
    */
   images: {
-    image: number | Media;
+    image: string | Media;
     /**
      * Use as main product image
      */
@@ -520,8 +520,8 @@ export interface Product {
  * via the `definition` "categories".
  */
 export interface Category {
-  id: number;
-  tenant?: (number | null) | Tenant;
+  id: string;
+  tenant?: (string | null) | Tenant;
   tenantSlug: string;
   /**
    * The display name of your category
@@ -546,19 +546,19 @@ export interface Category {
   /**
    * Select a parent category to create a subcategory
    */
-  parent?: (number | null) | Category;
+  parent?: (string | null) | Category;
   /**
    * Subcategories under this category
    */
   subcategories?: {
-    docs?: (number | Category)[];
+    docs?: (string | Category)[];
     hasNextPage?: boolean;
     totalDocs?: number;
   };
   /**
    * Small image for category cards (recommended: 300x300px)
    */
-  thumbnail: number | Media;
+  thumbnail: string | Media;
   /**
    * Search engine optimization settings
    */
@@ -578,7 +578,7 @@ export interface Category {
     /**
      * Image for social media sharing (recommended: 1200x630px)
      */
-    ogImage?: (number | null) | Media;
+    ogImage?: (string | null) | Media;
   };
   updatedAt: string;
   createdAt: string;
@@ -590,8 +590,8 @@ export interface Category {
  * via the `definition` "tags".
  */
 export interface Tag {
-  id: number;
-  tenant?: (number | null) | Tenant;
+  id: string;
+  tenant?: (string | null) | Tenant;
   /**
    * Display name for the tag
    */
@@ -639,14 +639,14 @@ export interface Tag {
  * via the `definition` "reviews".
  */
 export interface Review {
-  id: number;
-  tenant?: (number | null) | Tenant;
+  id: string;
+  tenant?: (string | null) | Tenant;
   name: string;
   rating: number;
   title: string;
   description: string;
   email?: string | null;
-  product: number | Product;
+  product: string | Product;
   updatedAt: string;
   createdAt: string;
 }
@@ -655,7 +655,7 @@ export interface Review {
  * via the `definition` "subscription-plans".
  */
 export interface SubscriptionPlan {
-  id: number;
+  id: string;
   name: string;
   description?: string | null;
   /**
@@ -682,9 +682,9 @@ export interface SubscriptionPlan {
  * via the `definition` "subscriptions".
  */
 export interface Subscription {
-  id: number;
-  tenant: number | Tenant;
-  plan: number | SubscriptionPlan;
+  id: string;
+  tenant: string | Tenant;
+  plan: string | SubscriptionPlan;
   razorpaySubscriptionId: string;
   status:
     'created' | 'pending' | 'authenticated' | 'active' | 'paused' | 'halted' | 'cancelled' | 'completed' | 'expired';
@@ -704,8 +704,8 @@ export interface Subscription {
  * via the `definition` "customers".
  */
 export interface Customer {
-  id: number;
-  tenant?: (number | null) | Tenant;
+  id: string;
+  tenant?: (string | null) | Tenant;
   firstname: string;
   lastname: string;
   email: string;
@@ -728,10 +728,10 @@ export interface Customer {
  * via the `definition` "orders".
  */
 export interface Order {
-  id: number;
-  tenant?: (number | null) | Tenant;
+  id: string;
+  tenant?: (string | null) | Tenant;
   name: string;
-  customer: number | Customer;
+  customer: string | Customer;
   isPaid: boolean;
   orderItems: {
     product: string;
@@ -761,8 +761,8 @@ export interface Order {
  * via the `definition` "category-sales-summary".
  */
 export interface CategorySalesSummary {
-  id: number;
-  tenant?: (number | null) | Tenant;
+  id: string;
+  tenant?: (string | null) | Tenant;
   /**
    * This field is automatically populated based on the selected category
    */
@@ -781,8 +781,8 @@ export interface CategorySalesSummary {
  * via the `definition` "products-sales-summary".
  */
 export interface ProductsSalesSummary {
-  id: number;
-  tenant?: (number | null) | Tenant;
+  id: string;
+  tenant?: (string | null) | Tenant;
   productName: string;
   month: string;
   year: string;
@@ -799,8 +799,8 @@ export interface ProductsSalesSummary {
  * via the `definition` "monthly-sales-summary".
  */
 export interface MonthlySalesSummary {
-  id: number;
-  tenant?: (number | null) | Tenant;
+  id: string;
+  tenant?: (string | null) | Tenant;
   month: string;
   year: string;
   totalOrders: number;
@@ -816,7 +816,7 @@ export interface MonthlySalesSummary {
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
-  id: number;
+  id: string;
   key: string;
   data:
     | {
@@ -833,68 +833,68 @@ export interface PayloadKv {
  * via the `definition` "payload-locked-documents".
  */
 export interface PayloadLockedDocument {
-  id: number;
+  id: string;
   document?:
     | ({
         relationTo: 'users';
-        value: number | User;
+        value: string | User;
       } | null)
     | ({
         relationTo: 'media';
-        value: number | Media;
+        value: string | Media;
       } | null)
     | ({
         relationTo: 'tenants';
-        value: number | Tenant;
+        value: string | Tenant;
       } | null)
     | ({
         relationTo: 'products';
-        value: number | Product;
+        value: string | Product;
       } | null)
     | ({
         relationTo: 'tags';
-        value: number | Tag;
+        value: string | Tag;
       } | null)
     | ({
         relationTo: 'categories';
-        value: number | Category;
+        value: string | Category;
       } | null)
     | ({
         relationTo: 'reviews';
-        value: number | Review;
+        value: string | Review;
       } | null)
     | ({
         relationTo: 'subscription-plans';
-        value: number | SubscriptionPlan;
+        value: string | SubscriptionPlan;
       } | null)
     | ({
         relationTo: 'subscriptions';
-        value: number | Subscription;
+        value: string | Subscription;
       } | null)
     | ({
         relationTo: 'customers';
-        value: number | Customer;
+        value: string | Customer;
       } | null)
     | ({
         relationTo: 'orders';
-        value: number | Order;
+        value: string | Order;
       } | null)
     | ({
         relationTo: 'category-sales-summary';
-        value: number | CategorySalesSummary;
+        value: string | CategorySalesSummary;
       } | null)
     | ({
         relationTo: 'products-sales-summary';
-        value: number | ProductsSalesSummary;
+        value: string | ProductsSalesSummary;
       } | null)
     | ({
         relationTo: 'monthly-sales-summary';
-        value: number | MonthlySalesSummary;
+        value: string | MonthlySalesSummary;
       } | null);
   globalSlug?: string | null;
   user: {
     relationTo: 'users';
-    value: number | User;
+    value: string | User;
   };
   updatedAt: string;
   createdAt: string;
@@ -904,10 +904,10 @@ export interface PayloadLockedDocument {
  * via the `definition` "payload-preferences".
  */
 export interface PayloadPreference {
-  id: number;
+  id: string;
   user: {
     relationTo: 'users';
-    value: number | User;
+    value: string | User;
   };
   key?: string | null;
   value?:
@@ -927,7 +927,7 @@ export interface PayloadPreference {
  * via the `definition` "payload-migrations".
  */
 export interface PayloadMigration {
-  id: number;
+  id: string;
   name?: string | null;
   batch?: number | null;
   updatedAt: string;

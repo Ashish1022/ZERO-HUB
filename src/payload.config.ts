@@ -1,5 +1,6 @@
 import { postgresAdapter } from '@payloadcms/db-postgres'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
+import { payloadCloudPlugin } from '@payloadcms/payload-cloud'
 import path from 'path'
 import { buildConfig } from 'payload'
 import { fileURLToPath } from 'url'
@@ -10,8 +11,8 @@ import { Media } from './collections/Media'
 import { Tenants } from './collections/Tenants'
 import { isSuperAdmin } from './lib/access'
 
-import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob';
-import { multiTenantPlugin } from '@payloadcms/plugin-multi-tenant';
+import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob'
+import { multiTenantPlugin } from '@payloadcms/plugin-multi-tenant'
 import { Products } from './collections/Products'
 import { Categories } from './collections/Categories'
 import { Reviews } from './collections/Reviews'
@@ -33,8 +34,33 @@ export default buildConfig({
     importMap: {
       baseDir: path.resolve(dirname),
     },
+    meta: {
+      titleSuffix: ' - ZERO | HUB',
+    },
+    components: {
+      graphics: {
+        Logo: '@/components/payload/login',
+      },
+      beforeNavLinks: ['@/components/payload/dashboard-button#DashboardLink'],
+      beforeDashboard: ['@/components/payload/dashboard'],
+    },
   },
-  collections: [Users, Media, Tenants, Products, Tags, Categories, Reviews, SubscriptionPlans, Subscriptions, Customers, Orders, CategorySalesSummary, ProductsSalesSummary, MonthlySalesSummary],
+  collections: [
+    Users,
+    Media,
+    Tenants,
+    Products,
+    Tags,
+    Categories,
+    Reviews,
+    SubscriptionPlans,
+    Subscriptions,
+    Customers,
+    Orders,
+    CategorySalesSummary,
+    ProductsSalesSummary,
+    MonthlySalesSummary,
+  ],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
@@ -44,9 +70,11 @@ export default buildConfig({
     pool: {
       connectionString: process.env.DATABASE_URL || '',
     },
+    idType: 'uuid',
   }),
   sharp,
   plugins: [
+    payloadCloudPlugin(),
     multiTenantPlugin({
       collections: {
         categories: {},
@@ -56,12 +84,12 @@ export default buildConfig({
         reviews: {},
         orders: {},
         customers: {},
-        "monthly-sales-summary": {},
-        "products-sales-summary": {},
-        "category-sales-summary": {},
+        'monthly-sales-summary': {},
+        'products-sales-summary': {},
+        'category-sales-summary': {},
       },
       tenantsArrayField: {
-        includeDefaultField: false
+        includeDefaultField: false,
       },
       userHasAccessToAllTenants: (user) => isSuperAdmin(user),
     }),
@@ -70,7 +98,7 @@ export default buildConfig({
       collections: {
         media: true,
       },
-      token: process.env.BLOB_READ_WRITE_TOKEN
-    })
+      token: process.env.BLOB_READ_WRITE_TOKEN,
+    }),
   ],
 })

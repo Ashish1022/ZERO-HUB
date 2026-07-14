@@ -1,4 +1,5 @@
 import { withPayload } from '@payloadcms/next/withPayload'
+import { createRequire } from 'module'
 import type { NextConfig } from 'next'
 import path from 'path'
 import { fileURLToPath } from 'url'
@@ -6,7 +7,14 @@ import { fileURLToPath } from 'url'
 const __filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(__filename)
 
+const require = createRequire(import.meta.url)
+const payloadScssDir = path.dirname(require.resolve('@payloadcms/ui/scss'))
+
 const nextConfig: NextConfig = {
+  sassOptions: {
+    loadPaths: [payloadScssDir],
+    includePaths: [payloadScssDir],
+  },
   images: {
     localPatterns: [
       {

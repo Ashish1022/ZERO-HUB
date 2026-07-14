@@ -15,7 +15,9 @@
     "start": "cross-env NODE_OPTIONS=--no-deprecation next start",
     "test": "pnpm run test:int && pnpm run test:e2e",
     "test:e2e": "cross-env NODE_OPTIONS=\"--no-deprecation --import=tsx/esm\" playwright test --config=playwright.config.ts",
-    "test:int": "cross-env NODE_OPTIONS=--no-deprecation vitest run --config ./vitest.config.mts"
+    "test:int": "cross-env NODE_OPTIONS=--no-deprecation vitest run --config ./vitest.config.mts",
+    "db:fresh": "payload migrate:fresh",
+    "db:seed": "pnpm run src/seed/seed.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",
@@ -27,6 +29,7 @@
     "@neondatabase/serverless": "^1.1.0",
     "@payloadcms/db-postgres": "3.86.0",
     "@payloadcms/next": "3.86.0",
+    "@payloadcms/payload-cloud": "^3.86.0",
     "@payloadcms/plugin-multi-tenant": "^3.86.0",
     "@payloadcms/richtext-lexical": "3.86.0",
     "@payloadcms/storage-vercel-blob": "^3.86.0",
