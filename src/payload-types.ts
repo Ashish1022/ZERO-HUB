@@ -69,22 +69,50 @@ export interface Config {
   collections: {
     users: User;
     media: Media;
+    tenants: Tenant;
+    products: Product;
+    tags: Tag;
+    categories: Category;
+    reviews: Review;
+    'subscription-plans': SubscriptionPlan;
+    subscriptions: Subscription;
+    customers: Customer;
+    orders: Order;
+    'category-sales-summary': CategorySalesSummary;
+    'products-sales-summary': ProductsSalesSummary;
+    'monthly-sales-summary': MonthlySalesSummary;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
   };
-  collectionsJoins: {};
+  collectionsJoins: {
+    categories: {
+      subcategories: 'categories';
+    };
+  };
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    tenants: TenantsSelect<false> | TenantsSelect<true>;
+    products: ProductsSelect<false> | ProductsSelect<true>;
+    tags: TagsSelect<false> | TagsSelect<true>;
+    categories: CategoriesSelect<false> | CategoriesSelect<true>;
+    reviews: ReviewsSelect<false> | ReviewsSelect<true>;
+    'subscription-plans': SubscriptionPlansSelect<false> | SubscriptionPlansSelect<true>;
+    subscriptions: SubscriptionsSelect<false> | SubscriptionsSelect<true>;
+    customers: CustomersSelect<false> | CustomersSelect<true>;
+    orders: OrdersSelect<false> | OrdersSelect<true>;
+    'category-sales-summary': CategorySalesSummarySelect<false> | CategorySalesSummarySelect<true>;
+    'products-sales-summary': ProductsSalesSummarySelect<false> | ProductsSalesSummarySelect<true>;
+    'monthly-sales-summary': MonthlySalesSummarySelect<false> | MonthlySalesSummarySelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
   };
   db: {
-    defaultIDType: string;
+    defaultIDType: number;
   };
   fallbackLocale: null;
   globals: {};
@@ -122,7 +150,16 @@ export interface UserAuthOperations {
  * via the `definition` "users".
  */
 export interface User {
-  id: string;
+  id: number;
+  username: string;
+  phone: string;
+  roles?: ('super-admin' | 'user')[] | null;
+  tenants?:
+    | {
+        tenant: number | Tenant;
+        id?: string | null;
+      }[]
+    | null;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -144,10 +181,140 @@ export interface User {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "tenants".
+ */
+export interface Tenant {
+  id: number;
+  name: string;
+  /**
+   * This is the subdomain of the store (e.g. [slug].zerohub.site).
+   */
+  slug: string;
+  /**
+   * Primary contact phone number
+   */
+  phone: string;
+  /**
+   * This is the name of the store (e.g. Ashish's Store).
+   */
+  store: string;
+  /**
+   * Currently active template configuration for this tenant.
+   */
+  activeTemplate: string;
+  /**
+   * Subscription and billing information
+   */
+  subscription?: {
+    /**
+     * Payment AccountId associated with your shop.
+     */
+    subscriptionId?: string | null;
+    /**
+     * You cannot create products until you submit your payment details.
+     */
+    subscriptionDetailsSubmitted?: boolean | null;
+    /**
+     * You cannot create products until your subscription is active or you're in trial period.
+     */
+    subscriptionStatus?: ('active' | 'paused' | 'cancelled' | 'expired' | 'none' | 'trial' | 'suspended') | null;
+    /**
+     * Tenant's subscription start date.
+     */
+    subscriptionStartDate?: string | null;
+    /**
+     * Store will be unavailable after this date if subscription not renewed.
+     */
+    subscriptionEndDate?: string | null;
+    /**
+     * Date when the 14-day trial period started.
+     */
+    trialStartDate?: string | null;
+    /**
+     * Date when the 14-day trial period ends. Store access will be limited after this date.
+     */
+    trialEndDate?: string | null;
+    /**
+     * Number of trial days remaining (calculated field).
+     */
+    trialDaysRemaining?: number | null;
+    /**
+     * Whether the trial period is currently active.
+     */
+    isTrialActive?: boolean | null;
+  };
+  /**
+   * Banking and payout information for payment processing
+   */
+  bankDetails?: {
+    /**
+     * Full name as per bank account records
+     */
+    accountHolderName?: string | null;
+    /**
+     * Bank account number for payouts
+     */
+    accountNumber?: string | null;
+    /**
+     * IFSC code of the bank branch (e.g. SBIN0001234)
+     */
+    ifscCode?: string | null;
+    /**
+     * You cannot create products until you verify your bank details.
+     */
+    bankDetailsSubmitted?: boolean | null;
+    /**
+     * Type of bank account
+     */
+    accountType?: ('vendor' | 'super-vendor') | null;
+    /**
+     * Razorpay linked account ID for payout processing
+     */
+    razorpayLinkedAccountId?: string | null;
+    /**
+     * Razorpay fund account ID for automated payouts
+     */
+    razorpayLinkedProductId?: string | null;
+    /**
+     * Current verification status of bank details
+     */
+    status?: ('pending' | 'verified' | 'rejected' | 'suspended' | 'not_submitted') | null;
+    /**
+     * Commission percentage fee charged on transactions (0-100%)
+     */
+    commissionFee?: number | null;
+    /**
+     * Fixed flat fee charged per transaction (in INR)
+     */
+    flatFee?: number | null;
+    /**
+     * PAN card number for tax identification (e.g. ABCDE1234F)
+     */
+    panCardNumber?: string | null;
+  };
+  /**
+   * Maximum number of products allowed for this tenant
+   */
+  maxProducts?: number | null;
+  /**
+   * Usage analytics and metrics
+   */
+  analytics?: {
+    /**
+     * Current number of products
+     */
+    totalProducts?: number | null;
+  };
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "media".
  */
 export interface Media {
-  id: string;
+  id: number;
+  tenant?: (number | null) | Tenant;
   alt: string;
   updatedAt: string;
   createdAt: string;
@@ -162,11 +329,494 @@ export interface Media {
   focalY?: number | null;
 }
 /**
+ * You must verify your account before creating products.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "products".
+ */
+export interface Product {
+  id: number;
+  tenant?: (number | null) | Tenant;
+  tenantSlug: string;
+  /**
+   * Product name (max 100 characters)
+   */
+  name: string;
+  /**
+   * URL-friendly version of the product name. e.g. [your_site]/zerohub.site/products/[slug]
+   */
+  slug: string;
+  /**
+   * Detailed product description
+   */
+  description: string;
+  /**
+   * Brief description for product listings
+   */
+  shortDescription?: string | null;
+  /**
+   * Product pricing information
+   */
+  pricing: {
+    /**
+     * Regular price in your store currency
+     */
+    price: number;
+    /**
+     * Discount price (for showing discounts)
+     */
+    compareAtPrice: number;
+    /**
+     * Your cost (for profit calculations)
+     */
+    costPrice: number;
+    /**
+     * Whether this product is subject to taxes
+     */
+    taxable?: boolean | null;
+  };
+  inventory?: {
+    /**
+     * Track inventory levels for this product
+     */
+    trackQuantity?: boolean | null;
+    /**
+     * Current stock quantity
+     */
+    quantity?: number | null;
+    /**
+     * Alert when stock reaches this level
+     */
+    lowStockThreshold?: number | null;
+    /**
+     * Allow purchases when out of stock
+     */
+    allowBackorders?: boolean | null;
+  };
+  /**
+   * Primary product category
+   */
+  category: number | Category;
+  /**
+   * Tags for filtering and search
+   */
+  tags?: (number | Tag)[] | null;
+  /**
+   * Product images (1-10 images required)
+   */
+  images: {
+    image: number | Media;
+    /**
+     * Use as main product image
+     */
+    isPrimary?: boolean | null;
+    id?: string | null;
+  }[];
+  /**
+   * Product specifications and features
+   */
+  specifications?:
+    | {
+        name: string;
+        value: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Product variations (size, color, etc.)
+   */
+  variants?:
+    | {
+        /**
+         * Variant name (e.g., 'Size', 'Color')
+         */
+        name: string;
+        options: {
+          label: string;
+          /**
+           * Price adjustment for this option
+           */
+          priceAdjustment?: number | null;
+          id?: string | null;
+        }[];
+        id?: string | null;
+      }[]
+    | null;
+  seo?: {
+    /**
+     * SEO title (recommended: 50-60 characters)
+     */
+    title?: string | null;
+    /**
+     * Meta description (recommended: 150-160 characters)
+     */
+    description?: string | null;
+    /**
+     * Comma-separated keywords
+     */
+    keywords?: string | null;
+  };
+  /**
+   * Feature this product on homepage
+   */
+  featured?: boolean | null;
+  /**
+   * Display badge on product
+   */
+  badge?: ('' | 'new' | 'sale' | 'bestseller' | 'limited') | null;
+  /**
+   * Product documentation, guides, and bonus materials
+   */
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  shipping?: {
+    /**
+     * Weight in kg
+     */
+    weight?: number | null;
+    dimensions?: {
+      length?: number | null;
+      width?: number | null;
+      height?: number | null;
+    };
+    requiresShipping?: boolean | null;
+    /**
+     * Offer free shipping for this product
+     */
+    freeShipping?: boolean | null;
+    /**
+     * Shipping cost for this product (leave empty to use store default)
+     */
+    shippingCost?: number | null;
+  };
+  /**
+   * Product return/refund policy
+   */
+  refundPolicy: '30-day' | '14-day' | '7-day' | '3-day' | '1-day' | 'no-refunds';
+  /**
+   * Product publication status
+   */
+  status: 'active' | 'draft' | 'archived';
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Manage product categories. You can create categories during your trial period or after verifying your account.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "categories".
+ */
+export interface Category {
+  id: number;
+  tenant?: (number | null) | Tenant;
+  tenantSlug: string;
+  /**
+   * The display name of your category
+   */
+  name: string;
+  /**
+   * This is the URL path of the category (e.g. [store_slug].zerohub.site/[slug]).
+   */
+  slug: string;
+  /**
+   * Brief description of this category (optional)
+   */
+  description?: string | null;
+  /**
+   * Active categories are visible to customers
+   */
+  status: 'active' | 'inactive' | 'draft';
+  /**
+   * Display this category prominently on the homepage
+   */
+  featured?: boolean | null;
+  /**
+   * Select a parent category to create a subcategory
+   */
+  parent?: (number | null) | Category;
+  /**
+   * Subcategories under this category
+   */
+  subcategories?: {
+    docs?: (number | Category)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
+  /**
+   * Small image for category cards (recommended: 300x300px)
+   */
+  thumbnail: number | Media;
+  /**
+   * Search engine optimization settings
+   */
+  seo?: {
+    /**
+     * SEO title (recommended: 50-60 characters)
+     */
+    title?: string | null;
+    /**
+     * Meta description (recommended: 150-160 characters)
+     */
+    description?: string | null;
+    /**
+     * Comma-separated keywords for this category
+     */
+    keywords?: string | null;
+    /**
+     * Image for social media sharing (recommended: 1200x630px)
+     */
+    ogImage?: (number | null) | Media;
+  };
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Manage product tags and categories
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "tags".
+ */
+export interface Tag {
+  id: number;
+  tenant?: (number | null) | Tenant;
+  /**
+   * Display name for the tag
+   */
+  name: string;
+  /**
+   * URL-friendly version of the tag name
+   */
+  slug: string;
+  /**
+   * Brief description of what this tag represents
+   */
+  description?: string | null;
+  /**
+   * Category this tag belongs to
+   */
+  type:
+    'general' | 'feature' | 'collection' | 'season' | 'style' | 'material' | 'color' | 'size' | 'brand' | 'occasion';
+  /**
+   * Show this tag in featured filters
+   */
+  featured?: boolean | null;
+  status: 'active' | 'inactive';
+  /**
+   * Number of products using this tag
+   */
+  productCount?: number | null;
+  /**
+   * Search engine optimization settings
+   */
+  seo?: {
+    /**
+     * SEO title for tag page
+     */
+    title?: string | null;
+    /**
+     * Meta description for tag page
+     */
+    description?: string | null;
+  };
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "reviews".
+ */
+export interface Review {
+  id: number;
+  tenant?: (number | null) | Tenant;
+  name: string;
+  rating: number;
+  title: string;
+  description: string;
+  email?: string | null;
+  product: number | Product;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "subscription-plans".
+ */
+export interface SubscriptionPlan {
+  id: number;
+  name: string;
+  description?: string | null;
+  /**
+   * Amount in paise (₹100 = 10000 paise)
+   */
+  amount: number;
+  currency?: string | null;
+  period: 'monthly' | 'yearly';
+  interval?: number | null;
+  razorpayPlanId?: string | null;
+  features?:
+    | {
+        feature: string;
+        id?: string | null;
+      }[]
+    | null;
+  isActive?: boolean | null;
+  popular?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "subscriptions".
+ */
+export interface Subscription {
+  id: number;
+  tenant: number | Tenant;
+  plan: number | SubscriptionPlan;
+  razorpaySubscriptionId: string;
+  status:
+    'created' | 'pending' | 'authenticated' | 'active' | 'paused' | 'halted' | 'cancelled' | 'completed' | 'expired';
+  startAt?: string | null;
+  endAt?: string | null;
+  currentStart?: string | null;
+  currentEnd?: string | null;
+  chargeAt?: string | null;
+  totalCount?: number | null;
+  paidCount?: number | null;
+  remainingCount?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "customers".
+ */
+export interface Customer {
+  id: number;
+  tenant?: (number | null) | Tenant;
+  firstname: string;
+  lastname: string;
+  email: string;
+  newsLetter?: boolean | null;
+  shippingAddress: {
+    street: string;
+    apartment: string;
+    city: string;
+    postalCode: string;
+    state: string;
+    country: string;
+  };
+  deliveryOption?: string | null;
+  specialInstructions?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "orders".
+ */
+export interface Order {
+  id: number;
+  tenant?: (number | null) | Tenant;
+  name: string;
+  customer: number | Customer;
+  isPaid: boolean;
+  orderItems: {
+    product: string;
+    category?: string | null;
+    quantity: number;
+    unitPrice: number;
+    discountPerItem?: number | null;
+    grossItemAmount: number;
+    id?: string | null;
+  }[];
+  orderDate: string;
+  grossAmount: number;
+  discountAmount?: number | null;
+  taxAmount: number;
+  shippingAmount?: number | null;
+  saleAmount: number;
+  /**
+   * Checkout session associated with the order.
+   */
+  razorpayCheckoutSessionId?: string | null;
+  razorpayOrderId?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "category-sales-summary".
+ */
+export interface CategorySalesSummary {
+  id: number;
+  tenant?: (number | null) | Tenant;
+  /**
+   * This field is automatically populated based on the selected category
+   */
+  categoryName: string;
+  month: string;
+  year: string;
+  totalOrders: number;
+  grossSales: number;
+  netSales: number;
+  totalItemsSold: number;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "products-sales-summary".
+ */
+export interface ProductsSalesSummary {
+  id: number;
+  tenant?: (number | null) | Tenant;
+  productName: string;
+  month: string;
+  year: string;
+  totalOrders: number;
+  costPrice?: number | null;
+  grossSales: number;
+  netSales: number;
+  totalItemsSold: number;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "monthly-sales-summary".
+ */
+export interface MonthlySalesSummary {
+  id: number;
+  tenant?: (number | null) | Tenant;
+  month: string;
+  year: string;
+  totalOrders: number;
+  grossSales: number;
+  netSales: number;
+  totalItemsSold: number;
+  averageOrderValue: number;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
-  id: string;
+  id: number;
   key: string;
   data:
     | {
@@ -183,20 +833,68 @@ export interface PayloadKv {
  * via the `definition` "payload-locked-documents".
  */
 export interface PayloadLockedDocument {
-  id: string;
+  id: number;
   document?:
     | ({
         relationTo: 'users';
-        value: string | User;
+        value: number | User;
       } | null)
     | ({
         relationTo: 'media';
-        value: string | Media;
+        value: number | Media;
+      } | null)
+    | ({
+        relationTo: 'tenants';
+        value: number | Tenant;
+      } | null)
+    | ({
+        relationTo: 'products';
+        value: number | Product;
+      } | null)
+    | ({
+        relationTo: 'tags';
+        value: number | Tag;
+      } | null)
+    | ({
+        relationTo: 'categories';
+        value: number | Category;
+      } | null)
+    | ({
+        relationTo: 'reviews';
+        value: number | Review;
+      } | null)
+    | ({
+        relationTo: 'subscription-plans';
+        value: number | SubscriptionPlan;
+      } | null)
+    | ({
+        relationTo: 'subscriptions';
+        value: number | Subscription;
+      } | null)
+    | ({
+        relationTo: 'customers';
+        value: number | Customer;
+      } | null)
+    | ({
+        relationTo: 'orders';
+        value: number | Order;
+      } | null)
+    | ({
+        relationTo: 'category-sales-summary';
+        value: number | CategorySalesSummary;
+      } | null)
+    | ({
+        relationTo: 'products-sales-summary';
+        value: number | ProductsSalesSummary;
+      } | null)
+    | ({
+        relationTo: 'monthly-sales-summary';
+        value: number | MonthlySalesSummary;
       } | null);
   globalSlug?: string | null;
   user: {
     relationTo: 'users';
-    value: string | User;
+    value: number | User;
   };
   updatedAt: string;
   createdAt: string;
@@ -206,10 +904,10 @@ export interface PayloadLockedDocument {
  * via the `definition` "payload-preferences".
  */
 export interface PayloadPreference {
-  id: string;
+  id: number;
   user: {
     relationTo: 'users';
-    value: string | User;
+    value: number | User;
   };
   key?: string | null;
   value?:
@@ -229,7 +927,7 @@ export interface PayloadPreference {
  * via the `definition` "payload-migrations".
  */
 export interface PayloadMigration {
-  id: string;
+  id: number;
   name?: string | null;
   batch?: number | null;
   updatedAt: string;
@@ -240,6 +938,15 @@ export interface PayloadMigration {
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
+  username?: T;
+  phone?: T;
+  roles?: T;
+  tenants?:
+    | T
+    | {
+        tenant?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -262,6 +969,7 @@ export interface UsersSelect<T extends boolean = true> {
  * via the `definition` "media_select".
  */
 export interface MediaSelect<T extends boolean = true> {
+  tenant?: T;
   alt?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -274,6 +982,350 @@ export interface MediaSelect<T extends boolean = true> {
   height?: T;
   focalX?: T;
   focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "tenants_select".
+ */
+export interface TenantsSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  phone?: T;
+  store?: T;
+  activeTemplate?: T;
+  subscription?:
+    | T
+    | {
+        subscriptionId?: T;
+        subscriptionDetailsSubmitted?: T;
+        subscriptionStatus?: T;
+        subscriptionStartDate?: T;
+        subscriptionEndDate?: T;
+        trialStartDate?: T;
+        trialEndDate?: T;
+        trialDaysRemaining?: T;
+        isTrialActive?: T;
+      };
+  bankDetails?:
+    | T
+    | {
+        accountHolderName?: T;
+        accountNumber?: T;
+        ifscCode?: T;
+        bankDetailsSubmitted?: T;
+        accountType?: T;
+        razorpayLinkedAccountId?: T;
+        razorpayLinkedProductId?: T;
+        status?: T;
+        commissionFee?: T;
+        flatFee?: T;
+        panCardNumber?: T;
+      };
+  maxProducts?: T;
+  analytics?:
+    | T
+    | {
+        totalProducts?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "products_select".
+ */
+export interface ProductsSelect<T extends boolean = true> {
+  tenant?: T;
+  tenantSlug?: T;
+  name?: T;
+  slug?: T;
+  description?: T;
+  shortDescription?: T;
+  pricing?:
+    | T
+    | {
+        price?: T;
+        compareAtPrice?: T;
+        costPrice?: T;
+        taxable?: T;
+      };
+  inventory?:
+    | T
+    | {
+        trackQuantity?: T;
+        quantity?: T;
+        lowStockThreshold?: T;
+        allowBackorders?: T;
+      };
+  category?: T;
+  tags?: T;
+  images?:
+    | T
+    | {
+        image?: T;
+        isPrimary?: T;
+        id?: T;
+      };
+  specifications?:
+    | T
+    | {
+        name?: T;
+        value?: T;
+        id?: T;
+      };
+  variants?:
+    | T
+    | {
+        name?: T;
+        options?:
+          | T
+          | {
+              label?: T;
+              priceAdjustment?: T;
+              id?: T;
+            };
+        id?: T;
+      };
+  seo?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        keywords?: T;
+      };
+  featured?: T;
+  badge?: T;
+  content?: T;
+  shipping?:
+    | T
+    | {
+        weight?: T;
+        dimensions?:
+          | T
+          | {
+              length?: T;
+              width?: T;
+              height?: T;
+            };
+        requiresShipping?: T;
+        freeShipping?: T;
+        shippingCost?: T;
+      };
+  refundPolicy?: T;
+  status?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "tags_select".
+ */
+export interface TagsSelect<T extends boolean = true> {
+  tenant?: T;
+  name?: T;
+  slug?: T;
+  description?: T;
+  type?: T;
+  featured?: T;
+  status?: T;
+  productCount?: T;
+  seo?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "categories_select".
+ */
+export interface CategoriesSelect<T extends boolean = true> {
+  tenant?: T;
+  tenantSlug?: T;
+  name?: T;
+  slug?: T;
+  description?: T;
+  status?: T;
+  featured?: T;
+  parent?: T;
+  subcategories?: T;
+  thumbnail?: T;
+  seo?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        keywords?: T;
+        ogImage?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "reviews_select".
+ */
+export interface ReviewsSelect<T extends boolean = true> {
+  tenant?: T;
+  name?: T;
+  rating?: T;
+  title?: T;
+  description?: T;
+  email?: T;
+  product?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "subscription-plans_select".
+ */
+export interface SubscriptionPlansSelect<T extends boolean = true> {
+  name?: T;
+  description?: T;
+  amount?: T;
+  currency?: T;
+  period?: T;
+  interval?: T;
+  razorpayPlanId?: T;
+  features?:
+    | T
+    | {
+        feature?: T;
+        id?: T;
+      };
+  isActive?: T;
+  popular?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "subscriptions_select".
+ */
+export interface SubscriptionsSelect<T extends boolean = true> {
+  tenant?: T;
+  plan?: T;
+  razorpaySubscriptionId?: T;
+  status?: T;
+  startAt?: T;
+  endAt?: T;
+  currentStart?: T;
+  currentEnd?: T;
+  chargeAt?: T;
+  totalCount?: T;
+  paidCount?: T;
+  remainingCount?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "customers_select".
+ */
+export interface CustomersSelect<T extends boolean = true> {
+  tenant?: T;
+  firstname?: T;
+  lastname?: T;
+  email?: T;
+  newsLetter?: T;
+  shippingAddress?:
+    | T
+    | {
+        street?: T;
+        apartment?: T;
+        city?: T;
+        postalCode?: T;
+        state?: T;
+        country?: T;
+      };
+  deliveryOption?: T;
+  specialInstructions?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "orders_select".
+ */
+export interface OrdersSelect<T extends boolean = true> {
+  tenant?: T;
+  name?: T;
+  customer?: T;
+  isPaid?: T;
+  orderItems?:
+    | T
+    | {
+        product?: T;
+        category?: T;
+        quantity?: T;
+        unitPrice?: T;
+        discountPerItem?: T;
+        grossItemAmount?: T;
+        id?: T;
+      };
+  orderDate?: T;
+  grossAmount?: T;
+  discountAmount?: T;
+  taxAmount?: T;
+  shippingAmount?: T;
+  saleAmount?: T;
+  razorpayCheckoutSessionId?: T;
+  razorpayOrderId?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "category-sales-summary_select".
+ */
+export interface CategorySalesSummarySelect<T extends boolean = true> {
+  tenant?: T;
+  categoryName?: T;
+  month?: T;
+  year?: T;
+  totalOrders?: T;
+  grossSales?: T;
+  netSales?: T;
+  totalItemsSold?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "products-sales-summary_select".
+ */
+export interface ProductsSalesSummarySelect<T extends boolean = true> {
+  tenant?: T;
+  productName?: T;
+  month?: T;
+  year?: T;
+  totalOrders?: T;
+  costPrice?: T;
+  grossSales?: T;
+  netSales?: T;
+  totalItemsSold?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "monthly-sales-summary_select".
+ */
+export interface MonthlySalesSummarySelect<T extends boolean = true> {
+  tenant?: T;
+  month?: T;
+  year?: T;
+  totalOrders?: T;
+  grossSales?: T;
+  netSales?: T;
+  totalItemsSold?: T;
+  averageOrderValue?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

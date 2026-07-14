@@ -7,6 +7,22 @@ import sharp from 'sharp'
 
 import { Users } from './collections/Users'
 import { Media } from './collections/Media'
+import { Tenants } from './collections/Tenants'
+import { isSuperAdmin } from './lib/access'
+
+import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob';
+import { multiTenantPlugin } from '@payloadcms/plugin-multi-tenant';
+import { Products } from './collections/Products'
+import { Categories } from './collections/Categories'
+import { Reviews } from './collections/Reviews'
+import { SubscriptionPlans } from './collections/SubscriptionPlans'
+import { Subscriptions } from './collections/Subscriptions'
+import { Customers } from './collections/Customers'
+import { Orders } from './collections/Orders'
+import { CategorySalesSummary } from './collections/CategorySalesSummary'
+import { ProductsSalesSummary } from './collections/ProductsSalesSummary'
+import { MonthlySalesSummary } from './collections/MonthlySalesSummary'
+import { Tags } from './collections/Tags'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -18,7 +34,7 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [Users, Media],
+  collections: [Users, Media, Tenants, Products, Tags, Categories, Reviews, SubscriptionPlans, Subscriptions, Customers, Orders, CategorySalesSummary, ProductsSalesSummary, MonthlySalesSummary],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
@@ -30,5 +46,31 @@ export default buildConfig({
     },
   }),
   sharp,
-  plugins: [],
+  plugins: [
+    multiTenantPlugin({
+      collections: {
+        categories: {},
+        products: {},
+        tags: {},
+        media: {},
+        reviews: {},
+        orders: {},
+        customers: {},
+        "monthly-sales-summary": {},
+        "products-sales-summary": {},
+        "category-sales-summary": {},
+      },
+      tenantsArrayField: {
+        includeDefaultField: false
+      },
+      userHasAccessToAllTenants: (user) => isSuperAdmin(user),
+    }),
+    vercelBlobStorage({
+      enabled: true,
+      collections: {
+        media: true,
+      },
+      token: process.env.BLOB_READ_WRITE_TOKEN
+    })
+  ],
 })
