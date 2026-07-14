@@ -1,274 +1,335 @@
-import { defineRelations } from "drizzle-orm";
-import * as schema from "./schema";
+import { relations } from "drizzle-orm/relations";
+import { users, usersSessions, tenants, media, productsImages, products, categories, productsSpecifications, productsVariants, productsVariantsOptions, usersTenants, tags, productsRels, reviews, subscriptionPlans, subscriptionPlansFeatures, customers, orders, categorySalesSummary, productsSalesSummary, monthlySalesSummary, subscriptions, usersRoles, ordersOrderItems, payloadLockedDocuments, payloadLockedDocumentsRels, payloadPreferences, payloadPreferencesRels } from "./schema";
 
-export const relations = defineRelations(schema, (r) => ({
-	categories: {
-		category: r.one.categories({
-			from: r.categories.parentId,
-			to: r.categories.id,
-			alias: "categories_parentId_categories_id"
-		}),
-		categories: r.many.categories({
-			alias: "categories_parentId_categories_id"
-		}),
-		mediaSeoOgImageId: r.one.media({
-			from: r.categories.seoOgImageId,
-			to: r.media.id,
-			alias: "categories_seoOgImageId_media_id"
-		}),
-		tenant: r.one.tenants({
-			from: r.categories.tenantId,
-			to: r.tenants.id,
-			alias: "categories_tenantId_tenants_id"
-		}),
-		mediaThumbnailId: r.one.media({
-			from: r.categories.thumbnailId,
-			to: r.media.id,
-			alias: "categories_thumbnailId_media_id"
-		}),
-		payloadLockedDocumentsRels: r.many.payloadLockedDocumentsRels(),
-		tenants: r.many.tenants({
-			from: r.categories.id.through(r.products.categoryId),
-			to: r.tenants.id.through(r.products.tenantId),
-			alias: "categories_id_tenants_id_via_products"
-		}),
-	},
-	media: {
-		categoriesSeoOgImageId: r.many.categories({
-			alias: "categories_seoOgImageId_media_id"
-		}),
-		categoriesThumbnailId: r.many.categories({
-			alias: "categories_thumbnailId_media_id"
-		}),
-		tenant: r.one.tenants({
-			from: r.media.tenantId,
-			to: r.tenants.id
-		}),
-		payloadLockedDocumentsRels: r.many.payloadLockedDocumentsRels(),
-		products: r.many.products({
-			from: r.media.id.through(r.productsImages.imageId),
-			to: r.products.id.through(r.productsImages.parentId)
-		}),
-	},
-	tenants: {
-		categoriesTenantId: r.many.categories({
-			alias: "categories_tenantId_tenants_id"
-		}),
-		categorySalesSummaries: r.many.categorySalesSummary(),
-		customersTenantId: r.many.customers({
-			alias: "customers_tenantId_tenants_id"
-		}),
-		media: r.many.media(),
-		monthlySalesSummaries: r.many.monthlySalesSummary(),
-		customersViaOrders: r.many.customers({
-			alias: "customers_id_tenants_id_via_orders"
-		}),
-		payloadLockedDocumentsRels: r.many.payloadLockedDocumentsRels(),
-		categoriesViaProducts: r.many.categories({
-			alias: "categories_id_tenants_id_via_products"
-		}),
-		productsSalesSummaries: r.many.productsSalesSummary(),
-		products: r.many.products(),
-		subscriptionPlans: r.many.subscriptionPlans(),
-		tags: r.many.tags(),
-		users: r.many.users(),
-	},
-	categorySalesSummary: {
-		tenant: r.one.tenants({
-			from: r.categorySalesSummary.tenantId,
-			to: r.tenants.id
-		}),
-		payloadLockedDocumentsRels: r.many.payloadLockedDocumentsRels(),
-	},
-	customers: {
-		tenant: r.one.tenants({
-			from: r.customers.tenantId,
-			to: r.tenants.id,
-			alias: "customers_tenantId_tenants_id"
-		}),
-		tenants: r.many.tenants({
-			from: r.customers.id.through(r.orders.customerId),
-			to: r.tenants.id.through(r.orders.tenantId),
-			alias: "customers_id_tenants_id_via_orders"
-		}),
-		payloadLockedDocumentsRels: r.many.payloadLockedDocumentsRels(),
-	},
-	monthlySalesSummary: {
-		tenant: r.one.tenants({
-			from: r.monthlySalesSummary.tenantId,
-			to: r.tenants.id
-		}),
-		payloadLockedDocumentsRels: r.many.payloadLockedDocumentsRels(),
-	},
-	ordersOrderItems: {
-		orderRelation: r.one.orders({
-			from: r.ordersOrderItems.parentId,
-			to: r.orders.id
-		}),
-	},
-	orders: {
-		ordersOrderItems: r.many.ordersOrderItems(),
-		payloadLockedDocumentsRels: r.many.payloadLockedDocumentsRels(),
-	},
-	payloadLockedDocumentsRels: {
-		category: r.one.categories({
-			from: r.payloadLockedDocumentsRels.categoriesId,
-			to: r.categories.id
-		}),
-		categorySalesSummary: r.one.categorySalesSummary({
-			from: r.payloadLockedDocumentsRels.categorySalesSummaryId,
-			to: r.categorySalesSummary.id
-		}),
-		customer: r.one.customers({
-			from: r.payloadLockedDocumentsRels.customersId,
-			to: r.customers.id
-		}),
-		media: r.one.media({
-			from: r.payloadLockedDocumentsRels.mediaId,
-			to: r.media.id
-		}),
-		monthlySalesSummary: r.one.monthlySalesSummary({
-			from: r.payloadLockedDocumentsRels.monthlySalesSummaryId,
-			to: r.monthlySalesSummary.id
-		}),
-		orderRelation: r.one.orders({
-			from: r.payloadLockedDocumentsRels.ordersId,
-			to: r.orders.id
-		}),
-		payloadLockedDocument: r.one.payloadLockedDocuments({
-			from: r.payloadLockedDocumentsRels.parentId,
-			to: r.payloadLockedDocuments.id
-		}),
-		product: r.one.products({
-			from: r.payloadLockedDocumentsRels.productsId,
-			to: r.products.id
-		}),
-		productsSalesSummary: r.one.productsSalesSummary({
-			from: r.payloadLockedDocumentsRels.productsSalesSummaryId,
-			to: r.productsSalesSummary.id
-		}),
-		review: r.one.reviews({
-			from: r.payloadLockedDocumentsRels.reviewsId,
-			to: r.reviews.id
-		}),
-		subscriptionPlan: r.one.subscriptionPlans({
-			from: r.payloadLockedDocumentsRels.subscriptionPlansId,
-			to: r.subscriptionPlans.id
-		}),
-		subscription: r.one.subscriptions({
-			from: r.payloadLockedDocumentsRels.subscriptionsId,
-			to: r.subscriptions.id
-		}),
-		tag: r.one.tags({
-			from: r.payloadLockedDocumentsRels.tagsId,
-			to: r.tags.id
-		}),
-		tenant: r.one.tenants({
-			from: r.payloadLockedDocumentsRels.tenantsId,
-			to: r.tenants.id
-		}),
-		user: r.one.users({
-			from: r.payloadLockedDocumentsRels.usersId,
-			to: r.users.id
-		}),
-	},
-	payloadLockedDocuments: {
-		payloadLockedDocumentsRels: r.many.payloadLockedDocumentsRels(),
-	},
-	products: {
-		payloadLockedDocumentsRels: r.many.payloadLockedDocumentsRels(),
-		media: r.many.media(),
-		tags: r.many.tags({
-			from: r.products.id.through(r.productsRels.parentId),
-			to: r.tags.id.through(r.productsRels.tagsId)
-		}),
-		productsSpecifications: r.many.productsSpecifications(),
-		productsVariants: r.many.productsVariants(),
-		tenants: r.many.tenants({
-			from: r.products.id.through(r.reviews.productId),
-			to: r.tenants.id.through(r.reviews.tenantId)
-		}),
-	},
-	productsSalesSummary: {
-		payloadLockedDocumentsRels: r.many.payloadLockedDocumentsRels(),
-		tenant: r.one.tenants({
-			from: r.productsSalesSummary.tenantId,
-			to: r.tenants.id
-		}),
-	},
-	reviews: {
-		payloadLockedDocumentsRels: r.many.payloadLockedDocumentsRels(),
-	},
-	subscriptionPlans: {
-		payloadLockedDocumentsRels: r.many.payloadLockedDocumentsRels(),
-		subscriptionPlansFeatures: r.many.subscriptionPlansFeatures(),
-		tenants: r.many.tenants({
-			from: r.subscriptionPlans.id.through(r.subscriptions.planId),
-			to: r.tenants.id.through(r.subscriptions.tenantId)
-		}),
-	},
-	subscriptions: {
-		payloadLockedDocumentsRels: r.many.payloadLockedDocumentsRels(),
-	},
-	tags: {
-		payloadLockedDocumentsRels: r.many.payloadLockedDocumentsRels(),
-		products: r.many.products(),
-		tenant: r.one.tenants({
-			from: r.tags.tenantId,
-			to: r.tenants.id
-		}),
-	},
-	users: {
-		payloadLockedDocumentsRels: r.many.payloadLockedDocumentsRels(),
-		payloadPreferences: r.many.payloadPreferences(),
-		usersRoles: r.many.usersRoles(),
-		usersSessions: r.many.usersSessions(),
-		tenants: r.many.tenants({
-			from: r.users.id.through(r.usersTenants.parentId),
-			to: r.tenants.id.through(r.usersTenants.tenantId)
-		}),
-	},
-	payloadPreferences: {
-		users: r.many.users({
-			from: r.payloadPreferences.id.through(r.payloadPreferencesRels.parentId),
-			to: r.users.id.through(r.payloadPreferencesRels.usersId)
-		}),
-	},
-	productsSpecifications: {
-		product: r.one.products({
-			from: r.productsSpecifications.parentId,
-			to: r.products.id
-		}),
-	},
-	productsVariants: {
-		product: r.one.products({
-			from: r.productsVariants.parentId,
-			to: r.products.id
-		}),
-		productsVariantsOptions: r.many.productsVariantsOptions(),
-	},
-	productsVariantsOptions: {
-		productsVariant: r.one.productsVariants({
-			from: r.productsVariantsOptions.parentId,
-			to: r.productsVariants.id
-		}),
-	},
-	subscriptionPlansFeatures: {
-		subscriptionPlan: r.one.subscriptionPlans({
-			from: r.subscriptionPlansFeatures.parentId,
-			to: r.subscriptionPlans.id
-		}),
-	},
-	usersRoles: {
-		user: r.one.users({
-			from: r.usersRoles.parentId,
-			to: r.users.id
-		}),
-	},
-	usersSessions: {
-		user: r.one.users({
-			from: r.usersSessions.parentId,
-			to: r.users.id
-		}),
-	},
-}))
+export const usersSessionsRelations = relations(usersSessions, ({one}) => ({
+	user: one(users, {
+		fields: [usersSessions.parentId],
+		references: [users.id]
+	}),
+}));
+
+export const usersRelations = relations(users, ({many}) => ({
+	usersSessions: many(usersSessions),
+	usersTenants: many(usersTenants),
+	usersRoles: many(usersRoles),
+	payloadLockedDocumentsRels: many(payloadLockedDocumentsRels),
+	payloadPreferencesRels: many(payloadPreferencesRels),
+}));
+
+export const mediaRelations = relations(media, ({one, many}) => ({
+	tenant: one(tenants, {
+		fields: [media.tenantId],
+		references: [tenants.id]
+	}),
+	productsImages: many(productsImages),
+	categories_thumbnailId: many(categories, {
+		relationName: "categories_thumbnailId_media_id"
+	}),
+	categories_seoOgImageId: many(categories, {
+		relationName: "categories_seoOgImageId_media_id"
+	}),
+	payloadLockedDocumentsRels: many(payloadLockedDocumentsRels),
+}));
+
+export const tenantsRelations = relations(tenants, ({many}) => ({
+	media: many(media),
+	products: many(products),
+	usersTenants: many(usersTenants),
+	tags: many(tags),
+	categories: many(categories),
+	reviews: many(reviews),
+	customers: many(customers),
+	orders: many(orders),
+	categorySalesSummaries: many(categorySalesSummary),
+	productsSalesSummaries: many(productsSalesSummary),
+	monthlySalesSummaries: many(monthlySalesSummary),
+	subscriptions: many(subscriptions),
+	payloadLockedDocumentsRels: many(payloadLockedDocumentsRels),
+}));
+
+export const productsImagesRelations = relations(productsImages, ({one}) => ({
+	media: one(media, {
+		fields: [productsImages.imageId],
+		references: [media.id]
+	}),
+	product: one(products, {
+		fields: [productsImages.parentId],
+		references: [products.id]
+	}),
+}));
+
+export const productsRelations = relations(products, ({one, many}) => ({
+	productsImages: many(productsImages),
+	tenant: one(tenants, {
+		fields: [products.tenantId],
+		references: [tenants.id]
+	}),
+	category: one(categories, {
+		fields: [products.categoryId],
+		references: [categories.id]
+	}),
+	productsSpecifications: many(productsSpecifications),
+	productsVariants: many(productsVariants),
+	productsRels: many(productsRels),
+	reviews: many(reviews),
+	payloadLockedDocumentsRels: many(payloadLockedDocumentsRels),
+}));
+
+export const categoriesRelations = relations(categories, ({one, many}) => ({
+	products: many(products),
+	tenant: one(tenants, {
+		fields: [categories.tenantId],
+		references: [tenants.id]
+	}),
+	category: one(categories, {
+		fields: [categories.parentId],
+		references: [categories.id],
+		relationName: "categories_parentId_categories_id"
+	}),
+	categories: many(categories, {
+		relationName: "categories_parentId_categories_id"
+	}),
+	media_thumbnailId: one(media, {
+		fields: [categories.thumbnailId],
+		references: [media.id],
+		relationName: "categories_thumbnailId_media_id"
+	}),
+	media_seoOgImageId: one(media, {
+		fields: [categories.seoOgImageId],
+		references: [media.id],
+		relationName: "categories_seoOgImageId_media_id"
+	}),
+	payloadLockedDocumentsRels: many(payloadLockedDocumentsRels),
+}));
+
+export const productsSpecificationsRelations = relations(productsSpecifications, ({one}) => ({
+	product: one(products, {
+		fields: [productsSpecifications.parentId],
+		references: [products.id]
+	}),
+}));
+
+export const productsVariantsRelations = relations(productsVariants, ({one, many}) => ({
+	product: one(products, {
+		fields: [productsVariants.parentId],
+		references: [products.id]
+	}),
+	productsVariantsOptions: many(productsVariantsOptions),
+}));
+
+export const productsVariantsOptionsRelations = relations(productsVariantsOptions, ({one}) => ({
+	productsVariant: one(productsVariants, {
+		fields: [productsVariantsOptions.parentId],
+		references: [productsVariants.id]
+	}),
+}));
+
+export const usersTenantsRelations = relations(usersTenants, ({one}) => ({
+	tenant: one(tenants, {
+		fields: [usersTenants.tenantId],
+		references: [tenants.id]
+	}),
+	user: one(users, {
+		fields: [usersTenants.parentId],
+		references: [users.id]
+	}),
+}));
+
+export const tagsRelations = relations(tags, ({one, many}) => ({
+	tenant: one(tenants, {
+		fields: [tags.tenantId],
+		references: [tenants.id]
+	}),
+	productsRels: many(productsRels),
+	payloadLockedDocumentsRels: many(payloadLockedDocumentsRels),
+}));
+
+export const productsRelsRelations = relations(productsRels, ({one}) => ({
+	product: one(products, {
+		fields: [productsRels.parentId],
+		references: [products.id]
+	}),
+	tag: one(tags, {
+		fields: [productsRels.tagsId],
+		references: [tags.id]
+	}),
+}));
+
+export const reviewsRelations = relations(reviews, ({one, many}) => ({
+	tenant: one(tenants, {
+		fields: [reviews.tenantId],
+		references: [tenants.id]
+	}),
+	product: one(products, {
+		fields: [reviews.productId],
+		references: [products.id]
+	}),
+	payloadLockedDocumentsRels: many(payloadLockedDocumentsRels),
+}));
+
+export const subscriptionPlansFeaturesRelations = relations(subscriptionPlansFeatures, ({one}) => ({
+	subscriptionPlan: one(subscriptionPlans, {
+		fields: [subscriptionPlansFeatures.parentId],
+		references: [subscriptionPlans.id]
+	}),
+}));
+
+export const subscriptionPlansRelations = relations(subscriptionPlans, ({many}) => ({
+	subscriptionPlansFeatures: many(subscriptionPlansFeatures),
+	subscriptions: many(subscriptions),
+	payloadLockedDocumentsRels: many(payloadLockedDocumentsRels),
+}));
+
+export const customersRelations = relations(customers, ({one, many}) => ({
+	tenant: one(tenants, {
+		fields: [customers.tenantId],
+		references: [tenants.id]
+	}),
+	orders: many(orders),
+	payloadLockedDocumentsRels: many(payloadLockedDocumentsRels),
+}));
+
+export const ordersRelations = relations(orders, ({one, many}) => ({
+	tenant: one(tenants, {
+		fields: [orders.tenantId],
+		references: [tenants.id]
+	}),
+	customer: one(customers, {
+		fields: [orders.customerId],
+		references: [customers.id]
+	}),
+	ordersOrderItems: many(ordersOrderItems),
+	payloadLockedDocumentsRels: many(payloadLockedDocumentsRels),
+}));
+
+export const categorySalesSummaryRelations = relations(categorySalesSummary, ({one, many}) => ({
+	tenant: one(tenants, {
+		fields: [categorySalesSummary.tenantId],
+		references: [tenants.id]
+	}),
+	payloadLockedDocumentsRels: many(payloadLockedDocumentsRels),
+}));
+
+export const productsSalesSummaryRelations = relations(productsSalesSummary, ({one, many}) => ({
+	tenant: one(tenants, {
+		fields: [productsSalesSummary.tenantId],
+		references: [tenants.id]
+	}),
+	payloadLockedDocumentsRels: many(payloadLockedDocumentsRels),
+}));
+
+export const monthlySalesSummaryRelations = relations(monthlySalesSummary, ({one, many}) => ({
+	tenant: one(tenants, {
+		fields: [monthlySalesSummary.tenantId],
+		references: [tenants.id]
+	}),
+	payloadLockedDocumentsRels: many(payloadLockedDocumentsRels),
+}));
+
+export const subscriptionsRelations = relations(subscriptions, ({one, many}) => ({
+	tenant: one(tenants, {
+		fields: [subscriptions.tenantId],
+		references: [tenants.id]
+	}),
+	subscriptionPlan: one(subscriptionPlans, {
+		fields: [subscriptions.planId],
+		references: [subscriptionPlans.id]
+	}),
+	payloadLockedDocumentsRels: many(payloadLockedDocumentsRels),
+}));
+
+export const usersRolesRelations = relations(usersRoles, ({one}) => ({
+	user: one(users, {
+		fields: [usersRoles.parentId],
+		references: [users.id]
+	}),
+}));
+
+export const ordersOrderItemsRelations = relations(ordersOrderItems, ({one}) => ({
+	order: one(orders, {
+		fields: [ordersOrderItems.parentId],
+		references: [orders.id]
+	}),
+}));
+
+export const payloadLockedDocumentsRelsRelations = relations(payloadLockedDocumentsRels, ({one}) => ({
+	payloadLockedDocument: one(payloadLockedDocuments, {
+		fields: [payloadLockedDocumentsRels.parentId],
+		references: [payloadLockedDocuments.id]
+	}),
+	user: one(users, {
+		fields: [payloadLockedDocumentsRels.usersId],
+		references: [users.id]
+	}),
+	media: one(media, {
+		fields: [payloadLockedDocumentsRels.mediaId],
+		references: [media.id]
+	}),
+	tenant: one(tenants, {
+		fields: [payloadLockedDocumentsRels.tenantsId],
+		references: [tenants.id]
+	}),
+	product: one(products, {
+		fields: [payloadLockedDocumentsRels.productsId],
+		references: [products.id]
+	}),
+	tag: one(tags, {
+		fields: [payloadLockedDocumentsRels.tagsId],
+		references: [tags.id]
+	}),
+	category: one(categories, {
+		fields: [payloadLockedDocumentsRels.categoriesId],
+		references: [categories.id]
+	}),
+	review: one(reviews, {
+		fields: [payloadLockedDocumentsRels.reviewsId],
+		references: [reviews.id]
+	}),
+	subscriptionPlan: one(subscriptionPlans, {
+		fields: [payloadLockedDocumentsRels.subscriptionPlansId],
+		references: [subscriptionPlans.id]
+	}),
+	subscription: one(subscriptions, {
+		fields: [payloadLockedDocumentsRels.subscriptionsId],
+		references: [subscriptions.id]
+	}),
+	customer: one(customers, {
+		fields: [payloadLockedDocumentsRels.customersId],
+		references: [customers.id]
+	}),
+	order: one(orders, {
+		fields: [payloadLockedDocumentsRels.ordersId],
+		references: [orders.id]
+	}),
+	categorySalesSummary: one(categorySalesSummary, {
+		fields: [payloadLockedDocumentsRels.categorySalesSummaryId],
+		references: [categorySalesSummary.id]
+	}),
+	productsSalesSummary: one(productsSalesSummary, {
+		fields: [payloadLockedDocumentsRels.productsSalesSummaryId],
+		references: [productsSalesSummary.id]
+	}),
+	monthlySalesSummary: one(monthlySalesSummary, {
+		fields: [payloadLockedDocumentsRels.monthlySalesSummaryId],
+		references: [monthlySalesSummary.id]
+	}),
+}));
+
+export const payloadLockedDocumentsRelations = relations(payloadLockedDocuments, ({many}) => ({
+	payloadLockedDocumentsRels: many(payloadLockedDocumentsRels),
+}));
+
+export const payloadPreferencesRelsRelations = relations(payloadPreferencesRels, ({one}) => ({
+	payloadPreference: one(payloadPreferences, {
+		fields: [payloadPreferencesRels.parentId],
+		references: [payloadPreferences.id]
+	}),
+	user: one(users, {
+		fields: [payloadPreferencesRels.usersId],
+		references: [users.id]
+	}),
+}));
+
+export const payloadPreferencesRelations = relations(payloadPreferences, ({many}) => ({
+	payloadPreferencesRels: many(payloadPreferencesRels),
+}));
