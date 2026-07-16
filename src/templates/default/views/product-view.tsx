@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { Suspense } from "react";
 import { ProductsList } from "../components/products/products-list";
-import { ProductHero } from "../components/products/product-hero";
 import { ProductCardSkeleton } from "../components/products/product-card";
+
+import { ProductHero } from "../../shared";
 
 import { generateTenantUrl } from "@/lib/utils";
 

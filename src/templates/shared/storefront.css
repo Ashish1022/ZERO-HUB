@@ -1,0 +1,57 @@
+/*
+ * Binds shadcn's design tokens to the active template — storefronts only.
+ *
+ * ── Why the wrapper, not :root ──────────────────────────────────────────────
+ * Next collects CSS from a route's whole module graph, including through lazy
+ * import(). /login reaches the template loader via appRouter -> templatesRouter
+ * -> service -> loader, so this file gets linked there whether we like it or not.
+ * A :root binding therefore leaked app-wide and recoloured the login card.
+ *
+ * [data-storefront] only exists in the tenant layout, so on every other page this
+ * file matches nothing and costs nothing but its bytes. Do not "simplify" this
+ * back to :root.
+ *
+ * It also removes the need to out-specify .dark: the wrapper is a descendant of
+ * <html>, so for its subtree these declarations win by inheritance — no
+ * specificity contest, no dependence on stylesheet order.
+ *
+ * ── What it's for ───────────────────────────────────────────────────────────
+ * The root layout sets defaultTheme="dark" app-wide. Templates style their own
+ * markup with --tpl-*, so they're unaffected — but the shadcn primitives they
+ * render inside (Skeleton, Input, Separator, plain Buttons) read --muted,
+ * --border, --primary. Without this, they render dark inside a bone-coloured
+ * editorial storefront. Rebinding them means a storefront looks like its
+ * template, and the dark theme stays where it belongs: landing page and admin.
+ */
+
+[data-storefront] {
+  --background: var(--tpl-surface, #ffffff);
+  --foreground: var(--tpl-fg, #1c1917);
+
+  --card: var(--tpl-surface-raised, #ffffff);
+  --card-foreground: var(--tpl-fg, #1c1917);
+  --popover: var(--tpl-surface-raised, #ffffff);
+  --popover-foreground: var(--tpl-fg, #1c1917);
+
+  --primary: var(--tpl-primary, #1c1917);
+  --primary-foreground: var(--tpl-primary-fg, #ffffff);
+
+  --secondary: var(--tpl-surface-muted, #f5f5f4);
+  --secondary-foreground: var(--tpl-fg, #1c1917);
+
+  --muted: var(--tpl-surface-muted, #f5f5f4);
+  --muted-foreground: var(--tpl-fg-muted, #57534e);
+
+  /* shadcn's `accent` is a hover/selected wash, not a brand colour — the soft
+     tint matches it, not the saturated brand accent. */
+  --accent: var(--tpl-accent-soft, #fef3c7);
+  --accent-foreground: var(--tpl-fg, #1c1917);
+
+  --destructive: var(--tpl-critical, #dc2626);
+
+  --border: var(--tpl-line, #e7e5e4);
+  --input: var(--tpl-line-strong, #d6d3d1);
+  --ring: var(--tpl-accent, #f59e0b);
+
+  --radius: var(--tpl-radius, 0.75rem);
+}

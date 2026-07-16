@@ -1,20 +1,22 @@
 import React, { Suspense } from 'react'
 
-import WishlistLoading, { WishlistView } from '@/templates/default/views/wishlist-views';
+import { getTenantSlots } from '@/modules/templates/server/render';
 
 interface Props {
     params: Promise<{ slug: string }>
 }
 
-const page = async ({ params }: Props) => {
+const WishlistPage = async ({ params }: Props) => {
 
     const { slug } = await params;
 
+    const { WishlistView, WishlistSkeleton } = await getTenantSlots(slug)
+
     return (
-        <Suspense fallback={<WishlistLoading />}>
+        <Suspense fallback={<WishlistSkeleton />}>
             <WishlistView slug={slug} />
         </Suspense>
     )
 }
 
-export default page
+export default WishlistPage

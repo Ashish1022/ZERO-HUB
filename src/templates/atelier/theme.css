@@ -1,0 +1,43 @@
+[data-storefront] {
+  background-color: var(--tpl-surface);
+  color: var(--tpl-fg);
+  color-scheme: light;
+
+  --tpl-surface: #faf9f6;
+  --tpl-surface-muted: #f2f0ea;
+  --tpl-surface-raised: #ffffff;
+
+  --tpl-fg: #1a1a18;
+  --tpl-fg-muted: #6b6862;
+  --tpl-fg-subtle: #a8a49c;
+
+  --tpl-accent: #9c6644;
+  --tpl-accent-hover: #7f5136;
+  --tpl-accent-fg: #ffffff;
+  --tpl-accent-soft: #f0e6dd;
+
+  --tpl-primary: #1a1a18;
+  --tpl-primary-hover: #9c6644;
+  --tpl-primary-fg: #faf9f6;
+
+  --tpl-line: #e4e1d9;
+  --tpl-line-strong: #cdc9be;
+
+  --tpl-radius: 0.125rem;
+  --tpl-radius-lg: 0.25rem;
+}
+
+.atelier-serif {
+  font-family: Georgia, "Iowan Old Style", "Times New Roman", Times, serif;
+}
+
+.atelier-tracked {
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.atelier-rule {
+  background-image: linear-gradient(to right, var(--tpl-line-strong) 50%, transparent 50%);
+  background-size: 8px 1px;
+  background-repeat: repeat-x;
+}

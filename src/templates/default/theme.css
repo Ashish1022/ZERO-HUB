@@ -1,0 +1,45 @@
+/*
+ * Scoped to [data-storefront], NOT :root — deliberately.
+ *
+ * Next collects CSS from a route's entire module graph, including through lazy
+ * import(). Any page whose server graph reaches the template loader (e.g. /login,
+ * via appRouter -> templatesRouter -> service -> loader) gets this file linked
+ * into it. Global selectors here therefore leak app-wide: `html { background }`
+ * repainted the login page, and :root token bindings recoloured its card.
+ *
+ * The wrapper lives in the tenant layout, so it exists only on storefronts.
+ * Leaked CSS then matches nothing. Custom properties inherit to the whole
+ * subtree, and because the wrapper is a descendant of <html>, its declarations
+ * beat the app-level .dark toggle for everything inside without any specificity
+ * contest.
+ */
+
+[data-storefront] {
+  background-color: var(--tpl-surface);
+  color: var(--tpl-fg);
+  color-scheme: light;
+
+  --tpl-surface: #ffffff;
+  --tpl-surface-muted: #fafaf9;
+  --tpl-surface-raised: #ffffff;
+
+  --tpl-fg: #1c1917;
+  --tpl-fg-muted: #57534e;
+  --tpl-fg-subtle: #a8a29e;
+
+  --tpl-accent: #d97706;
+  --tpl-accent-hover: #b45309;
+  --tpl-accent-fg: #ffffff;
+  --tpl-accent-soft: #fef3c7;
+
+  --tpl-primary: #1c1917;
+  --tpl-primary-hover: #d97706;
+  --tpl-primary-fg: #ffffff;
+
+  --tpl-line: #e7e5e4;
+  --tpl-line-strong: #d6d3d1;
+
+  --tpl-radius: 0.75rem;
+  --tpl-radius-lg: 1.5rem;
+}
+

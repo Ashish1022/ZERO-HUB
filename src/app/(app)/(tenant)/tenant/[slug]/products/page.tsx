@@ -1,8 +1,8 @@
-import React from 'react'
+import React, { Suspense } from 'react'
 
 import { getQueryClient, trpc } from '@/trpc/server'
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query'
-import { ProductsView } from '@/templates/default/views/products-view'
+import { getTenantSlots } from '@/modules/templates/server/render'
 import { loadProductFilters } from '@/modules/products/search-param'
 import { SearchParams } from 'nuqs/server'
 
@@ -17,6 +17,8 @@ const ProductsPage = async ({ params, searchParams }: Props) => {
   const filters = await loadProductFilters(searchParams)
 
   const queryClient = getQueryClient()
+
+  const { ProductsView, ProductsSkeleton } = await getTenantSlots(slug)
 
   void queryClient.prefetchInfiniteQuery(
     trpc.categories.getMany.infiniteQueryOptions(
@@ -48,7 +50,9 @@ const ProductsPage = async ({ params, searchParams }: Props) => {
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <ProductsView slug={slug} />
+      <Suspense fallback={<ProductsSkeleton />}>
+        <ProductsView slug={slug} />
+      </Suspense>
     </HydrationBoundary>
   )
 }

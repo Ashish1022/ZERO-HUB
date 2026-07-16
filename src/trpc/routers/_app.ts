@@ -8,6 +8,7 @@ import { checkoutRouter } from "@/modules/checkout/server/procedure";
 import { categoriesRouter } from "@/modules/categories/server/procedure";
 import { onboardingRouter } from "@/modules/onboarding/server/procedure";
 import { analyticsRouter } from "@/modules/analytics/server/procedure";
+import { templatesRouter } from "@/modules/templates/server/procedure";
 
 export const appRouter = createTRPCRouter({
     auth: authRouter,
@@ -17,7 +18,8 @@ export const appRouter = createTRPCRouter({
     analytics: analyticsRouter,
     checkout: checkoutRouter,
     categories: categoriesRouter,
-    onboarding: onboardingRouter
+    onboarding: onboardingRouter,
+    templates: templatesRouter
 })
 
 export type AppRouter = typeof appRouter;

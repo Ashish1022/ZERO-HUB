@@ -1,6 +1,6 @@
 import React, { Suspense } from 'react'
 
-import { CheckoutView } from '@/templates/default/views/checkout-view';
+import { getTenantSlots } from '@/modules/templates/server/render';
 
 interface Props {
   params: Promise<{ slug: string }>
@@ -10,8 +10,10 @@ const CheckoutPage = async ({ params }: Props) => {
 
   const { slug } = await params;
 
+  const { CheckoutView, CheckoutSkeleton } = await getTenantSlots(slug)
+
   return (
-    <Suspense>
+    <Suspense fallback={<CheckoutSkeleton />}>
       <CheckoutView slug={slug} />
     </Suspense>
   )

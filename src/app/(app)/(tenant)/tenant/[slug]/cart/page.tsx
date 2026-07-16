@@ -1,6 +1,6 @@
 import React, { Suspense } from 'react'
 
-import { CartLoading, CartView } from '@/templates/default/views/cart-view';
+import { getTenantSlots } from '@/modules/templates/server/render';
 
 interface Props {
     params: Promise<{ slug: string }>
@@ -10,8 +10,10 @@ const CartPage = async ({ params }: Props) => {
 
     const { slug } = await params;
 
+    const { CartView, CartSkeleton } = await getTenantSlots(slug)
+
     return (
-        <Suspense fallback={<CartLoading />}>
+        <Suspense fallback={<CartSkeleton />}>
             <CartView slug={slug} />
         </Suspense>
     )

@@ -17,7 +17,9 @@
     "test:e2e": "cross-env NODE_OPTIONS=\"--no-deprecation --import=tsx/esm\" playwright test --config=playwright.config.ts",
     "test:int": "cross-env NODE_OPTIONS=--no-deprecation vitest run --config ./vitest.config.mts",
     "db:fresh": "payload migrate:fresh",
-    "db:seed": "payload run src/seed/seed.ts"
+    "db:seed": "payload run src/seed/seed.ts",
+    "templates:sync": "cross-env NODE_OPTIONS=--no-deprecation payload run src/templates/registry/sync.ts",
+    "templates:grant": "cross-env NODE_OPTIONS=\"--no-deprecation --conditions=react-server\" payload run src/templates/registry/grant.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",

@@ -24,6 +24,9 @@ import { CategorySalesSummary } from './collections/CategorySalesSummary'
 import { ProductsSalesSummary } from './collections/ProductsSalesSummary'
 import { MonthlySalesSummary } from './collections/MonthlySalesSummary'
 import { Tags } from './collections/Tags'
+import { Templates } from './collections/Templates'
+import { TemplatePurchases } from './collections/TemplatePurchases'
+import { TenantTemplates } from './collections/TenantTemplates'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -60,6 +63,9 @@ export default buildConfig({
     CategorySalesSummary,
     ProductsSalesSummary,
     MonthlySalesSummary,
+    Templates,
+    TemplatePurchases,
+    TenantTemplates,
   ],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
@@ -87,6 +93,8 @@ export default buildConfig({
         'monthly-sales-summary': {},
         'products-sales-summary': {},
         'category-sales-summary': {},
+        'template-purchases': {},
+        'tenant-templates': {},
       },
       tenantsArrayField: {
         includeDefaultField: false,

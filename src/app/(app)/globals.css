@@ -47,6 +47,32 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+
+  --color-tpl-surface: var(--tpl-surface, #ffffff);
+  --color-tpl-surface-muted: var(--tpl-surface-muted, #f5f5f4);
+  --color-tpl-surface-raised: var(--tpl-surface-raised, #ffffff);
+
+  --color-tpl-fg: var(--tpl-fg, #1c1917);
+  --color-tpl-fg-muted: var(--tpl-fg-muted, #57534e);
+  --color-tpl-fg-subtle: var(--tpl-fg-subtle, #a8a29e);
+
+  --color-tpl-accent: var(--tpl-accent, #f59e0b);
+  --color-tpl-accent-hover: var(--tpl-accent-hover, #d97706);
+  --color-tpl-accent-fg: var(--tpl-accent-fg, #ffffff);
+  --color-tpl-accent-soft: var(--tpl-accent-soft, #fef3c7);
+
+  --color-tpl-primary: var(--tpl-primary, #1c1917);
+  --color-tpl-primary-hover: var(--tpl-primary-hover, #d97706);
+  --color-tpl-primary-fg: var(--tpl-primary-fg, #ffffff);
+
+  --color-tpl-line: var(--tpl-line, #e7e5e4);
+  --color-tpl-line-strong: var(--tpl-line-strong, #d6d3d1);
+
+  --color-tpl-positive: var(--tpl-positive, #16a34a);
+  --color-tpl-critical: var(--tpl-critical, #dc2626);
+
+  --radius-tpl: var(--tpl-radius, 0.75rem);
+  --radius-tpl-lg: var(--tpl-radius-lg, 1.5rem);
 }
 
 :root {

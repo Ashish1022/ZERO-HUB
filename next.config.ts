@@ -23,6 +23,9 @@ const nextConfig: NextConfig = {
       {
         pathname: '/docs/**',
       },
+      {
+        pathname: '/templates/**',
+      },
     ],
   },
   webpack: (webpackConfig) => {

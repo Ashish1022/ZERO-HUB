@@ -1,0 +1,79 @@
+/*
+ * Scoped to [data-storefront], NOT :root — deliberately.
+ *
+ * Next collects CSS from a route's entire module graph, including through lazy
+ * import(). Any page whose server graph reaches the template loader (e.g. /login,
+ * via appRouter -> templatesRouter -> service -> loader) gets this file linked
+ * into it. Global selectors here therefore leak app-wide: `html { background }`
+ * repainted the login page, and :root token bindings recoloured its card.
+ *
+ * The wrapper lives in the tenant layout, so it exists only on storefronts.
+ * Leaked CSS then matches nothing. Custom properties inherit to the whole
+ * subtree, and because the wrapper is a descendant of <html>, its declarations
+ * beat the app-level .dark toggle for everything inside without any specificity
+ * contest.
+ */
+
+[data-storefront] {
+  background-color: var(--tpl-surface);
+  color: var(--tpl-fg);
+  color-scheme: dark;
+
+  --tpl-surface: #0a0a0b;
+  --tpl-surface-muted: #101013;
+  --tpl-surface-raised: #17171c;
+
+  --tpl-fg: #f4f4f5;
+  --tpl-fg-muted: #a1a1aa;
+  --tpl-fg-subtle: #52525b;
+
+  --tpl-accent: #22d3ee;
+  --tpl-accent-hover: #06b6d4;
+  --tpl-accent-fg: #0a0a0b;
+  --tpl-accent-soft: #164e63;
+
+  --tpl-primary: #22d3ee;
+  --tpl-primary-hover: #67e8f9;
+  --tpl-primary-fg: #0a0a0b;
+
+  --tpl-line: #27272a;
+  --tpl-line-strong: #3f3f46;
+
+  --tpl-positive: #4ade80;
+  --tpl-critical: #f87171;
+
+  --tpl-radius: 0.25rem;
+  --tpl-radius-lg: 0.5rem;
+}
+
+@keyframes nova-scan {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(100%);
+  }
+}
+
+.nova-glow {
+  box-shadow: 0 0 24px -4px color-mix(in oklab, var(--tpl-accent) 55%, transparent);
+}
+
+.nova-grid {
+  background-image:
+    linear-gradient(to right, color-mix(in oklab, var(--tpl-line) 60%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in oklab, var(--tpl-line) 60%, transparent) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+.nova-mono {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nova-scanline {
+    display: none;
+  }
+}

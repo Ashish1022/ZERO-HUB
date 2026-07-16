@@ -81,6 +81,9 @@ export interface Config {
     'category-sales-summary': CategorySalesSummary;
     'products-sales-summary': ProductsSalesSummary;
     'monthly-sales-summary': MonthlySalesSummary;
+    templates: Template;
+    'template-purchases': TemplatePurchase;
+    'tenant-templates': TenantTemplate;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -106,6 +109,9 @@ export interface Config {
     'category-sales-summary': CategorySalesSummarySelect<false> | CategorySalesSummarySelect<true>;
     'products-sales-summary': ProductsSalesSummarySelect<false> | ProductsSalesSummarySelect<true>;
     'monthly-sales-summary': MonthlySalesSummarySelect<false> | MonthlySalesSummarySelect<true>;
+    templates: TemplatesSelect<false> | TemplatesSelect<true>;
+    'template-purchases': TemplatePurchasesSelect<false> | TemplatePurchasesSelect<true>;
+    'tenant-templates': TenantTemplatesSelect<false> | TenantTemplatesSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -811,10 +817,102 @@ export interface MonthlySalesSummary {
   updatedAt: string;
   createdAt: string;
 }
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "payload-kv".
- */
+
+export interface Template {
+  id: string;
+  slug: string;
+  name: string;
+  description: string;
+  version: string;
+  status: 'draft' | 'published' | 'deprecated';
+  category: 'general' | 'fashion' | 'electronics' | 'grocery' | 'furniture' | 'beauty' | 'digital' | 'minimal';
+  tags?:
+    | {
+        tag: string;
+        id?: string | null;
+      }[]
+    | null;
+  author: string;
+  thumbnail: string;
+  screenshots?:
+    | {
+        url: string;
+        id?: string | null;
+      }[]
+    | null;
+  features?:
+    | {
+        feature: string;
+        id?: string | null;
+      }[]
+    | null;
+  pricing: {
+    model: 'free' | 'paid';
+    amount: number;
+    compareAtAmount?: number | null;
+    currency: string;
+  };
+  featured?: boolean | null;
+  isDefault?: boolean | null;
+  releasedAt?: string | null;
+  changelog?:
+    | {
+        version: string;
+        date?: string | null;
+        notes?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  stats?: {
+    purchaseCount?: number | null;
+    activeInstalls?: number | null;
+    ratingAverage?: number | null;
+    ratingCount?: number | null;
+  };
+  updatedAt: string;
+  createdAt: string;
+}
+
+export interface TemplatePurchase {
+  id: string;
+  tenant?: (string | null) | Tenant;
+  template: string | Template;
+  status: 'pending' | 'completed' | 'failed' | 'refunded';
+  razorpayOrderId: string;
+  razorpayPaymentId?: string | null;
+  amount: number;
+  currency: string;
+  versionAtPurchase?: string | null;
+  purchasedAt?: string | null;
+  failureReason?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+
+export interface TenantTemplate {
+  id: string;
+  tenant?: (string | null) | Tenant;
+  template: string | Template;
+  status: 'active' | 'inactive' | 'revoked';
+  source: 'free' | 'purchase' | 'grant' | 'trial';
+  purchase?: (string | null) | TemplatePurchase;
+  installedVersion?: string | null;
+  activatedAt?: string | null;
+  deactivatedAt?: string | null;
+  expiresAt?: string | null;
+  settings?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+
 export interface PayloadKv {
   id: string;
   key: string;
@@ -828,10 +926,7 @@ export interface PayloadKv {
     | boolean
     | null;
 }
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "payload-locked-documents".
- */
+
 export interface PayloadLockedDocument {
   id: string;
   document?:
@@ -890,6 +985,18 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'monthly-sales-summary';
         value: string | MonthlySalesSummary;
+      } | null)
+    | ({
+        relationTo: 'templates';
+        value: string | Template;
+      } | null)
+    | ({
+        relationTo: 'template-purchases';
+        value: string | TemplatePurchase;
+      } | null)
+    | ({
+        relationTo: 'tenant-templates';
+        value: string | TenantTemplate;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -899,10 +1006,7 @@ export interface PayloadLockedDocument {
   updatedAt: string;
   createdAt: string;
 }
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "payload-preferences".
- */
+
 export interface PayloadPreference {
   id: string;
   user: {
@@ -922,10 +1026,7 @@ export interface PayloadPreference {
   updatedAt: string;
   createdAt: string;
 }
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "payload-migrations".
- */
+
 export interface PayloadMigration {
   id: string;
   name?: string | null;
@@ -933,10 +1034,7 @@ export interface PayloadMigration {
   updatedAt: string;
   createdAt: string;
 }
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "users_select".
- */
+
 export interface UsersSelect<T extends boolean = true> {
   username?: T;
   phone?: T;
@@ -964,10 +1062,7 @@ export interface UsersSelect<T extends boolean = true> {
         expiresAt?: T;
       };
 }
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media_select".
- */
+
 export interface MediaSelect<T extends boolean = true> {
   tenant?: T;
   alt?: T;
@@ -983,10 +1078,7 @@ export interface MediaSelect<T extends boolean = true> {
   focalX?: T;
   focalY?: T;
 }
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "tenants_select".
- */
+
 export interface TenantsSelect<T extends boolean = true> {
   name?: T;
   slug?: T;
@@ -1030,10 +1122,7 @@ export interface TenantsSelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
 }
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "products_select".
- */
+
 export interface ProductsSelect<T extends boolean = true> {
   tenant?: T;
   tenantSlug?: T;
@@ -1116,10 +1205,7 @@ export interface ProductsSelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
 }
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "tags_select".
- */
+
 export interface TagsSelect<T extends boolean = true> {
   tenant?: T;
   name?: T;
@@ -1138,10 +1224,7 @@ export interface TagsSelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
 }
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "categories_select".
- */
+
 export interface CategoriesSelect<T extends boolean = true> {
   tenant?: T;
   tenantSlug?: T;
@@ -1164,10 +1247,7 @@ export interface CategoriesSelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
 }
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "reviews_select".
- */
+
 export interface ReviewsSelect<T extends boolean = true> {
   tenant?: T;
   name?: T;
@@ -1179,10 +1259,7 @@ export interface ReviewsSelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
 }
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "subscription-plans_select".
- */
+
 export interface SubscriptionPlansSelect<T extends boolean = true> {
   name?: T;
   description?: T;
@@ -1202,10 +1279,7 @@ export interface SubscriptionPlansSelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
 }
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "subscriptions_select".
- */
+
 export interface SubscriptionsSelect<T extends boolean = true> {
   tenant?: T;
   plan?: T;
@@ -1222,10 +1296,7 @@ export interface SubscriptionsSelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
 }
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "customers_select".
- */
+
 export interface CustomersSelect<T extends boolean = true> {
   tenant?: T;
   firstname?: T;
@@ -1247,10 +1318,7 @@ export interface CustomersSelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
 }
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "orders_select".
- */
+
 export interface OrdersSelect<T extends boolean = true> {
   tenant?: T;
   name?: T;
@@ -1278,10 +1346,7 @@ export interface OrdersSelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
 }
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "category-sales-summary_select".
- */
+
 export interface CategorySalesSummarySelect<T extends boolean = true> {
   tenant?: T;
   categoryName?: T;
@@ -1294,10 +1359,7 @@ export interface CategorySalesSummarySelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
 }
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "products-sales-summary_select".
- */
+
 export interface ProductsSalesSummarySelect<T extends boolean = true> {
   tenant?: T;
   productName?: T;
@@ -1311,10 +1373,7 @@ export interface ProductsSalesSummarySelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
 }
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "monthly-sales-summary_select".
- */
+
 export interface MonthlySalesSummarySelect<T extends boolean = true> {
   tenant?: T;
   month?: T;
@@ -1327,18 +1386,100 @@ export interface MonthlySalesSummarySelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
 }
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "payload-kv_select".
- */
+
+export interface TemplatesSelect<T extends boolean = true> {
+  slug?: T;
+  name?: T;
+  description?: T;
+  version?: T;
+  status?: T;
+  category?: T;
+  tags?:
+    | T
+    | {
+        tag?: T;
+        id?: T;
+      };
+  author?: T;
+  thumbnail?: T;
+  screenshots?:
+    | T
+    | {
+        url?: T;
+        id?: T;
+      };
+  features?:
+    | T
+    | {
+        feature?: T;
+        id?: T;
+      };
+  pricing?:
+    | T
+    | {
+        model?: T;
+        amount?: T;
+        compareAtAmount?: T;
+        currency?: T;
+      };
+  featured?: T;
+  isDefault?: T;
+  releasedAt?: T;
+  changelog?:
+    | T
+    | {
+        version?: T;
+        date?: T;
+        notes?: T;
+        id?: T;
+      };
+  stats?:
+    | T
+    | {
+        purchaseCount?: T;
+        activeInstalls?: T;
+        ratingAverage?: T;
+        ratingCount?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+
+export interface TemplatePurchasesSelect<T extends boolean = true> {
+  tenant?: T;
+  template?: T;
+  status?: T;
+  razorpayOrderId?: T;
+  razorpayPaymentId?: T;
+  amount?: T;
+  currency?: T;
+  versionAtPurchase?: T;
+  purchasedAt?: T;
+  failureReason?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+
+export interface TenantTemplatesSelect<T extends boolean = true> {
+  tenant?: T;
+  template?: T;
+  status?: T;
+  source?: T;
+  purchase?: T;
+  installedVersion?: T;
+  activatedAt?: T;
+  deactivatedAt?: T;
+  expiresAt?: T;
+  settings?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+
 export interface PayloadKvSelect<T extends boolean = true> {
   key?: T;
   data?: T;
 }
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "payload-locked-documents_select".
- */
+
 export interface PayloadLockedDocumentsSelect<T extends boolean = true> {
   document?: T;
   globalSlug?: T;
@@ -1346,10 +1487,7 @@ export interface PayloadLockedDocumentsSelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
 }
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "payload-preferences_select".
- */
+
 export interface PayloadPreferencesSelect<T extends boolean = true> {
   user?: T;
   key?: T;
@@ -1357,30 +1495,21 @@ export interface PayloadPreferencesSelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
 }
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "payload-migrations_select".
- */
+
 export interface PayloadMigrationsSelect<T extends boolean = true> {
   name?: T;
   batch?: T;
   updatedAt?: T;
   createdAt?: T;
 }
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "collections_widget".
- */
+
 export interface CollectionsWidget {
   data?: {
     [k: string]: unknown;
   };
   width: 'full';
 }
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "auth".
- */
+
 export interface Auth {
   [k: string]: unknown;
 }
